@@ -1,0 +1,2 @@
+add_executable(UnitTest TestGraph.cpp TestColoring.cpp)
+#target_link_libraries(TestColoring DateConverter_lib)
