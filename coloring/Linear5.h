@@ -8,22 +8,24 @@ template <typename T>
 class Linear5;
 
 // Returns:
-// pair.first - number of colors used
-// pair.second - vector mapping vertex:color
+// a tuple {int: n of colors used, vector<int>: vector mapping vertex:color}
 template <typename T>
-inline std::pair<int, std::vector<int>> colorLinear5(const Graph<T> &graph) {
+inline std::tuple<int, std::vector<int>> colorLinear5(const Graph<T> &graph) {
     Linear5 coloringClass(graph);
-    return std::pair<int, std::vector<int>>(1,std::vector<int>(graph.getVertices().size()));
+    return {1, std::vector<int>(graph.getVertices().size())};
 }
 
 
 template <typename T>
 class Linear5 {
 
+private:
+    const Graph<T> & graph;
+
 public:
     std::vector<int> coloring;
 
-    Linear5(const Graph<T> & g): graph(g) {}
+    Linear5(const Graph<T> & g):graph(g)  {}
 
 
     void reduce();
@@ -31,8 +33,6 @@ public:
 
 
 private:
-    Graph<T> & graph;
-
     void check(int vertex);
     void identify(int u, int v);
 

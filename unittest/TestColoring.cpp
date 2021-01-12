@@ -27,6 +27,6 @@ TEST_CASE("TestLinear5_1", "[Linear5]"){
     graph.addEdge(3,4);
     graph.addEdge(1,3);
     auto result = colorLinear5(graph);
-    auto coloring = result.second;
+    auto coloring = std::get<1>(result);
     CHECK(isCorrectColoring(graph, coloring));
 }
