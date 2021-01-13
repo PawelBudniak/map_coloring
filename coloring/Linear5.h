@@ -21,6 +21,8 @@ class Linear5 {
 
 private:
     const Graph<T> & graph;
+    std::vector<int> q_deg5;
+    std::vector<int> q_deg_lte4;
 
 public:
     std::vector<int> coloring;
