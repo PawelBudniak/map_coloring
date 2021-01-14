@@ -20,15 +20,58 @@ TEST_CASE("TestIsCorrectColoringThrow", "[isCorrectColoring]"){
 }
 
 
-//waiting for colorLinear5 implementation
 TEST_CASE("TestLinear5_1", "[Linear5]"){
     Graph<LinkedVertex, LinkedVertexList> graph(5);
     graph.addEdge(0,1);
     graph.addEdge(3,4);
     graph.addEdge(1,3);
-    auto [n_colors, coloring] = colorLinear5(graph);
-    //auto tuple = colorLinear5(graph);
-    //auto coloring = std::get<1>(tuple);
+    Graph<LinkedVertex, LinkedVertexList> graphCopy = graph;
 
-    CHECK(isCorrectColoring(graph, coloring));
+    auto [n_colors, coloring] = colorLinear5(graph);
+
+    std::cout << "colors:" << n_colors;
+    CHECK(isCorrectColoring(graphCopy, coloring));
+    CHECK(n_colors <= 5);
+
+}
+
+TEST_CASE("TestGraphSize4", "[Linear5]"){
+    Graph<LinkedVertex, LinkedVertexList> graph(4);
+    graph.addEdge(0,1);
+    graph.addEdge(3,2);
+    graph.addEdge(1,3);
+    Graph<LinkedVertex, LinkedVertexList> graphCopy = graph;
+
+    auto [n_colors, coloring] = colorLinear5(graph);
+
+    std::cout << "colors:" << n_colors;
+    CHECK(isCorrectColoring(graphCopy, coloring));
+    CHECK(n_colors <= 5);
+
+}
+TEST_CASE("TestLinear5_2", "[Linear5]"){
+    Graph<LinkedVertex, LinkedVertexList> graph(8);
+
+
+    graph.addEdge(0, 1);
+    graph.addEdge(0, 2);
+    graph.addEdge(0, 3);
+    graph.addEdge(1, 3);
+    graph.addEdge(2, 3);
+    graph.addEdge(3, 4);
+    graph.addEdge(4, 5);
+    graph.addEdge(4, 6);
+    graph.addEdge(5, 6);
+    graph.addEdge(5, 7);
+    graph.addEdge(6, 7);
+
+    Graph<LinkedVertex, LinkedVertexList> graphCopy = graph;
+
+
+    auto [n_colors, coloring] = colorLinear5(graph);
+
+    std::cout << "colors:" << n_colors;
+
+    CHECK(isCorrectColoring(graphCopy, coloring));
+    CHECK(n_colors <= 5);
 }

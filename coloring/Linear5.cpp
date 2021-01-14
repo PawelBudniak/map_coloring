@@ -1,12 +1,12 @@
 #include "Linear5.h"
 #include <cassert>
+#include <set>
 
 auto colorLinear5(Graph<LinkedVertex,LinkedVertexList> &graph) -> std::tuple<int, std::vector<int>>
 {
     Linear5 coloringClass(graph);
     coloringClass.reduce();
-    coloringClass.color();
-    return {1, std::vector<int>(graph.getVertices().size())};
+    return coloringClass.color();
 }
 
 Linear5::Linear5(Graph<LinkedVertex, LinkedVertexList> &g): graph(g)
@@ -26,37 +26,112 @@ Linear5::Linear5(Graph<LinkedVertex, LinkedVertexList> &g): graph(g)
         int degree = vertices[i].size();
         degrees.push_back(degree);
 
-        if (degree == 5) {
-            qDeg5.push_back(i);
-            qPointers[i] = qDeg5.end()--;
-        }
-        else if(degree <= 4) {
-            qDegLte4.push_back(i);
-            qPointers[i] = qDegLte4.end()--;
-        }
+        if (degree == 5)
+            addToQ(qDeg5, i);
+        else if(degree <= 4)
+            addToQ(qDegLte4, i);
     }
 
 }
 
 void Linear5::reduce() {
+    auto & vertices = graph.getVertices();
+    while (n_vertices > 5){
+        if (!qDegLte4.empty()) {
+            // "delete top entry from Q4" -- idk if back or front
+            removeVertex(qDegLte4.front());
+        }
+        else{
+            int v = qDeg5.front();
 
+            // try and find two non adj x,y can be found in N(v) such that deg[x] < k and deg[y] < k
+            int y = -1, x = -1;
+
+            // candidates for x,y are these with deg smaller than K
+            std::vector<int> candidates;
+            for (const LinkedVertex& temp: vertices[v]){
+                if (degrees[temp] < K_THRESHHOLD)
+                    candidates.push_back(temp);
+            }
+            // now check if we can find 2 non adjacent candidates, this takes at most O(5*5*K) => it's done in constant time
+            // candidates size <= vertices[v] size == 5 since it's in qDeg5
+            // TODO: mozna przechodzic po (5 choose 2) kombinacjach a nie po 5*5 wszystkich z powtorzeniami jak teraz
+            for (int i=0; i < candidates.size(); ++i){
+                for (int j=i; i < candidates.size(); ++j){
+                    bool areAdj = false;
+                    for (const LinkedVertex& k: vertices[j]){
+                        if (k.index == i){
+                            areAdj = true;
+                            break;
+                        }
+                    }
+                    if (!areAdj){
+                        y = i;
+                        x = j;
+                    }
+                }
+            }
+            // vertices x,y that satisfy the conditions described above have been found
+            if (y != -1){
+                removeVertex(v);
+                identify(x,y);
+            }
+            else{
+                qDeg5.pop_front();
+                qDeg5.push_back(v);
+            }
+
+        }
+    }
 }
 
-void Linear5::color() {
+auto Linear5::color() -> std::tuple<int, std::vector<int>> {
+    auto & vertices = graph.getVertices();
+    std::vector<int> coloring(vertices.size(), -1);
 
+    // color at most 5 remaining vertices (after reduction) i.e those on qDegLte4
+    auto it = qDegLte4.begin();
+    for (int i = 0; i < qDegLte4.size(); ++i){
+        coloring[*it] = i;
+        ++it;
+    }
+
+
+    while (!removed.empty()){
+        RemoveInfo rInfo = removed.top();
+        removed.pop();
+        if (rInfo.identifiedVertex == NOT_IDENTIFIED){
+            //color rInfo.rmV with color different than vertices in vertices[rInfo.rmV]
+            bool colors_used[N_COLORS] = { false };
+            for (const LinkedVertex& v: vertices[rInfo.removedVertex]){
+                if (coloring[v] != NO_COLOR)
+                    colors_used[coloring[v]] = true;
+            }
+            for (int i=0; i < N_COLORS; ++i){
+                if (!colors_used[i])
+                    coloring[rInfo.removedVertex] = i;
+            }
+
+        }
+        else{
+            // idk if identifiedVertex is already colored here
+            assert(coloring[rInfo.identifiedVertex] != NO_COLOR);
+            coloring[rInfo.removedVertex] = coloring[rInfo.identifiedVertex];
+        }
+
+    }
+    // TODO: xD
+    int n_colors = std::set<int>(coloring.begin(), coloring.end()).size();
+    return {n_colors, coloring};
 }
 
 void Linear5::check(int vertex) {
+
     if (degrees[vertex] == 5) {
-        qDeg5.push_back(vertex);
-        qPointers[vertex] = qDeg5.end()--;
+        addToQ(qDeg5, vertex);
     }
     else if(degrees[vertex] == 4){
-        assert(qPointers[vertex].has_value() && "This should never fail, before the check the vertex must've had deg=5 "
-                                                "so it must've had a valid qPointers value");
-        qDeg5.erase(qPointers[vertex].value());
-        qDegLte4.push_back(vertex);
-        qPointers[vertex] = qDegLte4.end()--;
+        moveToQ(qDegLte4, qDeg5, vertex);
     }
 
 }
@@ -68,15 +143,68 @@ void Linear5::removeVertex(int vertex) {
         degrees[v] -= 1;
         check(v);
     }
-    removed.push(RemoveInfo(vertex, -1));
+    removed.push(RemoveInfo(vertex, NOT_IDENTIFIED));
 
-    auto optQptr = qPointers[vertex];
-    if (optQptr.has_value()){ // useless check i think
-        if (degrees[vertex] == 5)
-            qDeg5.erase(optQptr.value());
-        else if (degrees[vertex] <= 4)
-            qDegLte4.erase(optQptr.value());
-    }
+    removeFromUnkownQ(vertex);
     n_vertices -= 1;
 
 }
+
+void Linear5::identify(int u, int v) {
+    auto & vertices = graph.getVertices();
+
+    for (const LinkedVertex& v_adj: vertices[v])
+        marks[v_adj] = true;
+
+    for (const LinkedVertex& u_adj: vertices[u]){
+        graph.removeNeighbour(u_adj); // removes u from vertices[u_adj] //TODO: wiec slaba ta nazwa funkcji
+        if (!marks[u_adj]){
+            // u_adj is adjacent to u but not v
+            graph.addEdge(u_adj, v);
+            degrees[v] += 1;
+            if (degrees[v] == 6)
+                removeFromQ(qDeg5, v);
+            else if (degrees[v] == 5)
+                moveToQ(qDeg5, qDegLte4, v);
+        }
+        else{
+            degrees[u_adj] -= 1;
+            check(u_adj);
+        }
+    }
+    for (const LinkedVertex& v_adj: vertices[v])
+        marks[v_adj] = false;
+    removeFromUnkownQ(u);
+    removed.push(RemoveInfo(u,v));
+    n_vertices -= 1;
+}
+
+void Linear5::removeFromQ(Linear5::Qtype& q, int vertex) {
+    assert(qPointers[vertex].has_value());
+
+    q.erase(qPointers[vertex].value());
+    qPointers[vertex] = std::nullopt;
+
+}
+
+void Linear5::addToQ(Linear5::Qtype &q, int vertex) {
+    q.push_back(vertex);
+    qPointers[vertex] = --q.end();
+}
+
+void Linear5::moveToQ(Linear5::Qtype &to, Linear5::Qtype &from, int vertex) {
+    assert(qPointers[vertex].has_value());
+
+    from.erase(qPointers[vertex].value());
+    to.push_back(vertex);
+    qPointers[vertex] = --to.end();
+}
+
+void Linear5::removeFromUnkownQ(int vertex) {
+    if (degrees[vertex] == 5)
+        removeFromQ(qDeg5, vertex);
+    else if (degrees[vertex] <= 4)
+        removeFromQ(qDegLte4, vertex);
+}
+
+
