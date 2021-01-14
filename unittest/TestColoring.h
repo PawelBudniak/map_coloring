@@ -3,8 +3,8 @@
 
 #include "../Graph.h"
 
-template <typename T>
-inline bool isCorrectColoring(const Graph<T> & graph, std::vector<int> coloring){
+template <typename T, typename V>
+inline bool isCorrectColoring(const Graph<T,V> & graph, std::vector<int> coloring){
     auto vertices = graph.getVertices();
     if (vertices.size() != coloring.size()){
         throw std::invalid_argument("Number of vertices colored doesn't equal the number of vertices in graph");

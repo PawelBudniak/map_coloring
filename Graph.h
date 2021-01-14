@@ -58,11 +58,13 @@ public:
 private:
     VertexList vertices;
 public:
-    const VertexList &getVertices() const;
+    //const VertexList &getVertices() const;
+    auto getVertices() const -> const VertexList &;
 };
 
 template<typename V, typename NeighbourList>
-inline void Graph<V, NeighbourList>::addEdge(int v1, int v2) {
+inline void Graph<V, NeighbourList>::addEdge(int v1, int v2)
+{
     // insert because push_back doesn't work for sets
     vertices[v1].insert(vertices[v1].end(), v2);
     vertices[v2].insert(vertices[v2].end(), v1);
@@ -75,12 +77,14 @@ inline void Graph<V, NeighbourList>::addEdge(int v1, int v2) {
 //}
 //
 template<typename V, typename NeighbourList>
-inline const typename Graph<V,NeighbourList>::VertexList &Graph<V,NeighbourList>::getVertices() const {
+inline auto Graph<V,NeighbourList>::getVertices() const -> const typename Graph<V,NeighbourList>::VertexList &
+{
     return vertices;
 }
 
 template<>
-void Graph<LinkedVertex, LinkedVertexList>::addEdge(int v1, int v2) {
+inline void Graph<LinkedVertex, LinkedVertexList>::addEdge(int v1, int v2)
+{
     auto temp = vertices[v2].end();
     vertices[v1].push_back(LinkedVertex(v2, temp));
     auto it1 = --vertices[v1].end();
@@ -89,7 +93,8 @@ void Graph<LinkedVertex, LinkedVertexList>::addEdge(int v1, int v2) {
 }
 
 template<>
-void Graph<LinkedVertex, LinkedVertexList>::removeNeighbour(LinkedVertex from) {
+inline void Graph<LinkedVertex, LinkedVertexList>::removeNeighbour(LinkedVertex from)
+{
     vertices[from].erase(from.edge);
 }
 

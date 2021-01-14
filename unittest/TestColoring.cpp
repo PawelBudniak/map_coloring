@@ -20,13 +20,15 @@ TEST_CASE("TestIsCorrectColoringThrow", "[isCorrectColoring]"){
 }
 
 
-// waiting for colorLinear5 implementation
-//TEST_CASE("TestLinear5_1", "[Linear5]"){
-//    Graph<std::deque<Vertex>> graph(5);
-//    graph.addEdge(0,1);
-//    graph.addEdge(3,4);
-//    graph.addEdge(1,3);
-//    auto [n_colors, coloring] = colorLinear5(graph);
-//
-//    CHECK(isCorrectColoring(graph, coloring));
-//}
+//waiting for colorLinear5 implementation
+TEST_CASE("TestLinear5_1", "[Linear5]"){
+    Graph<LinkedVertex, LinkedVertexList> graph(5);
+    graph.addEdge(0,1);
+    graph.addEdge(3,4);
+    graph.addEdge(1,3);
+    auto [n_colors, coloring] = colorLinear5(graph);
+    //auto tuple = colorLinear5(graph);
+    //auto coloring = std::get<1>(tuple);
+
+    CHECK(isCorrectColoring(graph, coloring));
+}

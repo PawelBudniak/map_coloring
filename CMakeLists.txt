@@ -3,5 +3,5 @@ project(map_coloring)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(map_coloring main.cpp Graph.h) #coloring/Linear5.cpp coloring/Linear5.h)
+add_executable(map_coloring main.cpp Graph.h coloring/Linear5.cpp coloring/Linear5.h)
 add_subdirectory(unittest)
