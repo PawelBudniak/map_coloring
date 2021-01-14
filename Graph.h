@@ -6,10 +6,24 @@
 #include <list>
 #include <algorithm>
 #include <iostream>
+#include <deque>
 
 
 
-template <typename NeighbourList = std::vector<int>>
+struct LinkedVertex;
+
+using LinkedVertexList = std::list<LinkedVertex>;
+
+struct LinkedVertex{
+    int index;
+    LinkedVertexList::iterator edge;
+
+    LinkedVertex(int idx, const LinkedVertexList::iterator &edge) :index(idx), edge(edge) {}
+
+    operator int () const { return index; }
+};
+
+template <typename V, typename NeighbourList = std::vector<V>>
 class Graph {
 public:
 
@@ -21,7 +35,8 @@ public:
     const NeighbourList& operator[] (int idx) const { return vertices[idx]; }
 
     void addEdge(int v1, int v2);
-    void removeNeighbour(int from, int neighbour);
+
+    void removeNeighbour(LinkedVertex from);
 
 
 
@@ -46,36 +61,50 @@ public:
     const VertexList &getVertices() const;
 };
 
-template<typename NeighbourList>
-inline void Graph<NeighbourList>::addEdge(int v1, int v2) {
+template<typename V, typename NeighbourList>
+inline void Graph<V, NeighbourList>::addEdge(int v1, int v2) {
     // insert because push_back doesn't work for sets
     vertices[v1].insert(vertices[v1].end(), v2);
     vertices[v2].insert(vertices[v2].end(), v1);
 }
 
-template<typename NeighbourList>
-inline void Graph<NeighbourList>::removeNeighbour(int from, int neighbour) {
-    NeighbourList & neighbours = vertices[from];
-    neighbours.erase(std::remove(neighbours.begin(), neighbours.end(), neighbour), neighbours.end());
-}
-
-template<typename NeighbourList>
-inline const typename Graph<NeighbourList>::VertexList &Graph<NeighbourList>::getVertices() const {
+//template<typename NeighbourList>
+//inline void Graph<NeighbourList>::removeNeighbour(int from, int neighbour) {
+//    NeighbourList & neighbours = vertices[from];
+//    neighbours.erase(std::remove(neighbours.begin(), neighbours.end(), neighbour), neighbours.end());
+//}
+//
+template<typename V, typename NeighbourList>
+inline const typename Graph<V,NeighbourList>::VertexList &Graph<V,NeighbourList>::getVertices() const {
     return vertices;
 }
 
 template<>
-inline void Graph<std::unordered_set<int>>::removeNeighbour(int from, int neighbour) {
-    std::unordered_set<int> & neighbours = vertices[from];
-    std::cout << "hello specka" << std::endl;
-    neighbours.erase(neighbour);
+void Graph<LinkedVertex, LinkedVertexList>::addEdge(int v1, int v2) {
+    auto temp = vertices[v2].end();
+    vertices[v1].push_back(LinkedVertex(v2, temp));
+    auto it1 = --vertices[v1].end();
+    vertices[v2].push_back(LinkedVertex(v1, it1));
+    (--vertices[v1].end())->edge = --vertices[v2].end();
 }
+
 template<>
-inline void Graph<std::list<int>>::removeNeighbour(int from, int neighbour) {
-    std::cout << "list specka" << std::endl;
-    std::list<int> & neighbours = vertices[from];
-    neighbours.remove(neighbour);
+void Graph<LinkedVertex, LinkedVertexList>::removeNeighbour(LinkedVertex from) {
+    vertices[from].erase(from.edge);
 }
+
+//template<>
+//inline void Graph<std::unordered_set<int>>::removeNeighbour(int from, int neighbour) {
+//    std::unordered_set<int> & neighbours = vertices[from];
+//    std::cout << "hello specka" << std::endl;
+//    neighbours.erase(neighbour);
+//}
+//template<>
+//inline void Graph<std::list<int>>::removeNeighbour(int from, int neighbour) {
+//    std::cout << "list specka" << std::endl;
+//    std::list<int> & neighbours = vertices[from];
+//    neighbours.remove(neighbour);
+//}
 
 //template<typename int>
 //inline void Graph<int, std::vector<int>>::removeNeighbour(int from, int neighbour) {
