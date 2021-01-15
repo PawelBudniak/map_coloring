@@ -13,12 +13,15 @@ class CommandLineParser
 {
 public:
     enum Mode {MANUAL, GENERATOR, TEST, INVALID};
-    enum Param {N, K, R, STEP};
+    enum Algorithm {GREEDY, DSATUR, LINEAR5};
+    enum Param {A, N, K, R, STEP};
 
 public:
     CommandLineParser(int argc, char** argv);
 
     [[nodiscard]] Mode getMode() const { return mode; }
+    [[nodiscard]] Algorithm getAlgorithm() const { return algorithm; }
+
     [[nodiscard]] int getParam(Param param) const;
 
     void printParams() const;
@@ -37,6 +40,7 @@ private:
     void printHelp() const;
 
     Mode mode{INVALID};
+    Algorithm algorithm{GREEDY};
 
     int n{};
     int k{};

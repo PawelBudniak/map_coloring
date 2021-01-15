@@ -36,7 +36,9 @@ void CommandLineParser::parseCommands(int argc, char** argv)
     {
         auto cmd = std::string(argv[i]);
 
-        if (cmd == "-n" && ++i < argc)
+        if (cmd == "-a" && ++i < argc)
+            readParam(A, argv[i]);
+        else if (cmd == "-n" && ++i < argc)
             readParam(N, argv[i]);
         else if (cmd == "-r" && ++i < argc)
             readParam(R, argv[i]);
@@ -54,6 +56,23 @@ void CommandLineParser::parseCommands(int argc, char** argv)
 
 void CommandLineParser::readParam(Param param, const std::string& str)
 {
+    if (param == A)
+    {
+        if (str == "greedy")
+            algorithm = GREEDY;
+        else if (str == "dsatur")
+            algorithm = DSATUR;
+        else if (str == "linear5")
+            algorithm = LINEAR5;
+        else
+        {
+            printHelp();
+            exit(0);
+        }
+
+        return;
+    }
+
     int temp;
     try {
         temp = std::stoi(str);
@@ -68,6 +87,7 @@ void CommandLineParser::readParam(Param param, const std::string& str)
         case K:     k = temp;     break;
         case R:     r = temp;     break;
         case STEP:  step = temp;  break;
+        case A:                   break;
     }
 }
 
@@ -91,6 +111,12 @@ void CommandLineParser::printParams() const
         case GENERATOR:     std::cout << "Mode: generator, ";   break;
         case TEST:          std::cout << "Mode: test, ";        break;
         case INVALID:       printHelp();    exit(0);
+    }
+
+    switch (algorithm) {
+        case GREEDY:        std::cout << "a: greedy, ";         break;
+        case DSATUR:        std::cout << "a: dsatur, ";         break;
+        case LINEAR5:       std::cout << "a: linear5, ";        break;
     }
 
     std::cout << "n: " << n << ", k: " << k << ", r: " << r << ", step: " << step << '\n';

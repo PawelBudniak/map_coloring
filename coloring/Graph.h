@@ -38,7 +38,7 @@ public:
 
     void removeNeighbour(LinkedVertex from);
 
-
+    void resize(int newSize) { vertices.resize(newSize); }
 
     //friend std::ostream& operator<<(std::ostream& os, const Graph& g);
 
