@@ -4,12 +4,14 @@
  *  Github: https://github.com/michal-swiatek
  */
 
+#include <set>
+
 #include "Graph.h"
 #include "coloring/Coloring.h"
 
 int main(int argc, char** argv)
 {
-    Graph<int> graph(8);
+    Graph<int, std::set<int>> graph(8);
 
     graph.addEdge(0, 1);
     graph.addEdge(0, 2);
@@ -25,10 +27,17 @@ int main(int argc, char** argv)
 
     std::cout << graph << "\n\n\n";
 
-    auto [maxColor, colors] = greedyColoring(graph);
+    auto [maxColor1, colors1] = greedyColoring(graph);
+    auto [maxColor2, colors2] = dsaturColoring(graph);
 
-    std::cout << maxColor << '\n';
-    for (const auto& color : colors)
+    std::cout << maxColor1 << '\n';
+    for (const auto& color : colors1)
+        std::cout << color << ' ';
+
+    std::cout << "\n\n";
+
+    std::cout << maxColor2 << '\n';
+    for (const auto& color : colors2)
         std::cout << color << ' ';
 
     return 0;
