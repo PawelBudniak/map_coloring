@@ -111,10 +111,11 @@ auto dsaturColoring(const Graph<Vertex, NeighbourList>& graph, bool shuffle = fa
         //      1. With highest saturation, when equal
         //      2. With highest degree, when equal
         //      3. First encountered
-        auto best = unassignedVertices.begin();
-        for (auto it = ++unassignedVertices.begin(); it != unassignedVertices.end(); ++it)
-            if (saturation[*it] > saturation[*best] || (saturation[*it] == saturation[*best] && degree[*it] > degree[*best]))
-                best = it;
+        auto best = std::max_element(unassignedVertices.begin(), unassignedVertices.end(),
+                    [&](const auto& a, const auto& b)
+                    {
+                     return saturation[a] < saturation[b] || (saturation[a] == saturation[b] && degree[a] < degree[b]);
+                    });
 
         //  Get vertex from iterator
         auto v = *best;
