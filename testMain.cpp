@@ -6,11 +6,15 @@
 
 #include <set>
 
+#include "CommandLineParser.h"
 #include "coloring/Graph.h"
 #include "coloring/Coloring.h"
 
 int main(int argc, char** argv)
 {
+    CommandLineParser commandParser(argc, argv);
+    commandParser.printParams();
+
     Graph<int, std::set<int>> graph(8);
 
     graph.addEdge(0, 1);

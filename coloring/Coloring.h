@@ -217,7 +217,7 @@ public:
 
 
     void reduce();
-    auto Linear5::color() -> std::tuple<int, std::vector<int>>;
+    auto color() -> std::tuple<int, std::vector<int>>;
 
 
 private:
