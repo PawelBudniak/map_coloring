@@ -130,16 +130,22 @@ auto dsaturColoring(const Graph<Vertex, NeighbourList>& graph, bool shuffle = fa
         //  Only neighbours of recently assigned vertex have to be checked because only their saturation could change
         for (const auto& neighbour : neighbours)
         {
-            std::unordered_set<int> adjacentColors;     //  Used to count unique adjacent colors
+            auto index = static_cast<int>(neighbour);   //  Get neighbour index by converting it to int
 
-            for (const auto& vertex : vertices[neighbour])
+            //  Update only non-colored, non-visited vertices
+            if (result[index] == -1)
             {
-                auto color = result[static_cast<int>(vertex)];    //  Get vertex index by converting it to int
-                if (color != -1)
-                    adjacentColors.insert(color);
-            }
+                std::unordered_set<int> adjacentColors;     //  Used to count unique adjacent colors
 
-            saturation[static_cast<int>(neighbour)] = adjacentColors.size();
+                for (const auto& vertex : vertices[neighbour])
+                {
+                    auto color = result[static_cast<int>(vertex)];    //  Get vertex index by converting it to int
+                    if (color != -1)
+                        adjacentColors.insert(color);
+                }
+
+                saturation[index] = adjacentColors.size();
+            }
         }
 
         //  Remove vertex from unassignedVertices
