@@ -35,7 +35,7 @@ TEST_CASE("TestLinear5_1", "[Linear5]"){
 
 }
 
-TEST_CASE("TestGraphSize4", "[Linear5]"){
+TEST_CASE("Graph-4 is correctly colored", "[Linear5]"){
     Graph<LinkedVertex, LinkedVertexList> graph(4);
     graph.addEdge(0,1);
     graph.addEdge(3,2);
@@ -49,7 +49,7 @@ TEST_CASE("TestGraphSize4", "[Linear5]"){
     CHECK(n_colors <= 5);
 
 }
-TEST_CASE("TestLinear5_2", "[Linear5]"){
+TEST_CASE("Medium sized graph-8 is correctly colored", "[Linear5]"){
     Graph<LinkedVertex, LinkedVertexList> graph(8);
 
 

@@ -9,22 +9,24 @@ auto colorLinear5(Graph<LinkedVertex,LinkedVertexList> &graph) -> std::tuple<int
     return coloringClass.color();
 }
 
-Linear5::Linear5(Graph<LinkedVertex, LinkedVertexList> &g): graph(g)
+Linear5::Linear5(Graph<LinkedVertex, LinkedVertexList> &g):
+graph(g),
+vertices(g.getVertices())
 {
 
-    auto & vertices = graph.getVertices();
+    //auto & vertices = graph.getVertices();
 
     // setup helper variables and containers
 
     n_vertices = vertices.size();
     qPointers = std::vector<std::optional<Qtype::iterator>>(n_vertices, std::nullopt);
-    degrees = std::vector<int>();
+    degrees = std::vector<int>(n_vertices);
     marks = std::vector<bool>(n_vertices, false);
 
     for (int i = 0; i <n_vertices; ++i){
 
         int degree = vertices[i].size();
-        degrees.push_back(degree);
+        degrees[i] = degree;
 
         if (degree == 5)
             addToQ(qDeg5, i);
@@ -35,7 +37,6 @@ Linear5::Linear5(Graph<LinkedVertex, LinkedVertexList> &g): graph(g)
 }
 
 void Linear5::reduce() {
-    auto & vertices = graph.getVertices();
     while (n_vertices > 5){
         if (!qDegLte4.empty()) {
             // "delete top entry from Q4" -- idk if back or front
@@ -54,7 +55,7 @@ void Linear5::reduce() {
                     candidates.push_back(temp);
             }
             // now check if we can find 2 non adjacent candidates, this takes at most O(5*5*K) => it's done in constant time
-            // candidates size <= vertices[v] size == 5 since it's in qDeg5
+            // candidates size <= vertices[v] size == 5; since it's in qDeg5
             // TODO: mozna przechodzic po (5 choose 2) kombinacjach a nie po 5*5 wszystkich z powtorzeniami jak teraz
             for (int i=0; i < candidates.size(); ++i){
                 for (int j=i; i < candidates.size(); ++j){
@@ -86,7 +87,6 @@ void Linear5::reduce() {
 }
 
 auto Linear5::color() -> std::tuple<int, std::vector<int>> {
-    auto & vertices = graph.getVertices();
     std::vector<int> coloring(vertices.size(), -1);
 
     // color at most 5 remaining vertices (after reduction) i.e those on qDegLte4
@@ -101,7 +101,7 @@ auto Linear5::color() -> std::tuple<int, std::vector<int>> {
         RemoveInfo rInfo = removed.top();
         removed.pop();
         if (rInfo.identifiedVertex == NOT_IDENTIFIED){
-            //color rInfo.rmV with color different than vertices in vertices[rInfo.rmV]
+            //color rInfo.removedVertex with color different than vertices in vertices[rInfo.removedVertex]
             bool colors_used[N_COLORS] = { false };
             for (const LinkedVertex& v: vertices[rInfo.removedVertex]){
                 if (coloring[v] != NO_COLOR)
@@ -114,7 +114,6 @@ auto Linear5::color() -> std::tuple<int, std::vector<int>> {
 
         }
         else{
-            // idk if identifiedVertex is already colored here
             assert(coloring[rInfo.identifiedVertex] != NO_COLOR);
             coloring[rInfo.removedVertex] = coloring[rInfo.identifiedVertex];
         }
@@ -137,7 +136,6 @@ void Linear5::check(int vertex) {
 }
 
 void Linear5::removeVertex(int vertex) {
-    auto & vertices = graph.getVertices();
     for (const LinkedVertex& v: vertices[vertex]){
         graph.removeNeighbour(v);
         degrees[v] -= 1;
@@ -151,13 +149,12 @@ void Linear5::removeVertex(int vertex) {
 }
 
 void Linear5::identify(int u, int v) {
-    auto & vertices = graph.getVertices();
 
     for (const LinkedVertex& v_adj: vertices[v])
         marks[v_adj] = true;
 
     for (const LinkedVertex& u_adj: vertices[u]){
-        graph.removeNeighbour(u_adj); // removes u from vertices[u_adj] //TODO: wiec slaba ta nazwa funkcji
+        graph.removeNeighbour(u_adj);
         if (!marks[u_adj]){
             // u_adj is adjacent to u but not v
             graph.addEdge(u_adj, v);

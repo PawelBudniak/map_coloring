@@ -92,6 +92,8 @@ inline void Graph<LinkedVertex, LinkedVertexList>::addEdge(int v1, int v2)
     (--vertices[v1].end())->edge = --vertices[v2].end();
 }
 
+// a vertex v is removed, such that v is at the other end of an edge with vertex *from* passed to this function
+// e.g.: this method is called on vertex 3 in vertices[1] => vertex 1 in vertices[3] will be removed
 template<>
 inline void Graph<LinkedVertex, LinkedVertexList>::removeNeighbour(LinkedVertex from)
 {

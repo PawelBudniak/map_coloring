@@ -25,6 +25,7 @@ private:
     static const int N_COLORS = 5;
 
     Graph<LinkedVertex,LinkedVertexList> & graph;
+    const Graph<LinkedVertex,LinkedVertexList>::VertexList & vertices;
 
     using Qtype = std::list<int>;
     // holds vertices of degree 5
