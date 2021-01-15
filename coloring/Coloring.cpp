@@ -1,6 +1,7 @@
-#include "Linear5.h"
 #include <cassert>
 #include <set>
+
+#include "Coloring.h"
 
 auto colorLinear5(Graph<LinkedVertex,LinkedVertexList> &graph) -> std::tuple<int, std::vector<int>>
 {
@@ -10,8 +11,8 @@ auto colorLinear5(Graph<LinkedVertex,LinkedVertexList> &graph) -> std::tuple<int
 }
 
 Linear5::Linear5(Graph<LinkedVertex, LinkedVertexList> &g):
-graph(g),
-vertices(g.getVertices())
+        graph(g),
+        vertices(g.getVertices())
 {
 
     //auto & vertices = graph.getVertices();
@@ -121,6 +122,7 @@ auto Linear5::color() -> std::tuple<int, std::vector<int>> {
     }
     // TODO: xD
     int n_colors = std::set<int>(coloring.begin(), coloring.end()).size();
+    assert(n_colors <= 5);
     return {n_colors, coloring};
 }
 

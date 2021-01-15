@@ -1,7 +1,7 @@
 #ifndef MAP_COLORING_TESTCOLORING_H
 #define MAP_COLORING_TESTCOLORING_H
 
-#include "../Graph.h"
+#include "../coloring/Graph.h"
 
 template <typename T, typename V>
 inline bool isCorrectColoring(const Graph<T,V> & graph, std::vector<int> coloring){

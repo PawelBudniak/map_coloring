@@ -1,6 +1,6 @@
 #define CATCH_CONFIG_MAIN // provides a main() function for catch testing, should be included only once
 #include "catch.hpp"
-#include "../Graph.h"
+#include "../coloring/Graph.h"
 #include <list>
 
 

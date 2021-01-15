@@ -1,6 +1,6 @@
 #include "catch.hpp"
 #include "TestColoring.h"
-#include "../coloring/Linear5.h"
+#include "../coloring/Coloring.h"
 
 TEST_CASE("TestIsCorrectColoring", "[isCorrectColoring]"){
     Graph<int> graph(4);
@@ -49,7 +49,8 @@ TEST_CASE("Graph-4 is correctly colored", "[Linear5]"){
     CHECK(n_colors <= 5);
 
 }
-TEST_CASE("Medium sized graph-8 is correctly colored", "[Linear5]"){
+
+TEST_CASE("Medium sized graph-8 is correctly colored by linear5", "[Linear5]"){
     Graph<LinkedVertex, LinkedVertexList> graph(8);
 
 
@@ -74,4 +75,41 @@ TEST_CASE("Medium sized graph-8 is correctly colored", "[Linear5]"){
 
     CHECK(isCorrectColoring(graphCopy, coloring));
     CHECK(n_colors <= 5);
+}
+
+TEST_CASE("Medium sized graph-8 is correctly colored", "[color]"){
+    Graph<LinkedVertex, LinkedVertexList> graph(8);
+
+
+    graph.addEdge(0, 1);
+    graph.addEdge(0, 2);
+    graph.addEdge(0, 3);
+    graph.addEdge(1, 3);
+    graph.addEdge(2, 3);
+    graph.addEdge(3, 4);
+    graph.addEdge(4, 5);
+    graph.addEdge(4, 6);
+    graph.addEdge(5, 6);
+    graph.addEdge(5, 7);
+    graph.addEdge(6, 7);
+
+    Graph<LinkedVertex, LinkedVertexList> graphCopy = graph;
+
+    SECTION("GreedyColoring"){
+        auto [n_colors, coloring] = greedyColoring(graph, true);
+        CHECK(isCorrectColoring(graph, coloring));
+        std::cout << "colors: " << n_colors << std::endl;
+    }
+    SECTION("DSatur"){
+        auto [n_colors, coloring] = dsaturColoring(graph);
+        CHECK(isCorrectColoring(graph, coloring));
+        std::cout << "colors: " << n_colors << std::endl;
+    }
+    SECTION("Linear5"){
+        Graph<LinkedVertex, LinkedVertexList> graph_copy = graph;
+        auto [n_colors, coloring] = colorLinear5(graph);
+        CHECK(isCorrectColoring(graph_copy, coloring));
+        CHECK(n_colors <= 5);
+        std::cout << "colors: " << n_colors << std::endl;
+    }
 }

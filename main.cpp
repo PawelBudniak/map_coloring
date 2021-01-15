@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Graph.h"
+#include "coloring/Graph.h"
 
 
 int main() {

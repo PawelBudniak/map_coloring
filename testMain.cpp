@@ -6,7 +6,7 @@
 
 #include <set>
 
-#include "Graph.h"
+#include "coloring/Graph.h"
 #include "coloring/Coloring.h"
 
 int main(int argc, char** argv)

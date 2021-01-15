@@ -100,34 +100,5 @@ inline void Graph<LinkedVertex, LinkedVertexList>::removeNeighbour(LinkedVertex 
     vertices[from].erase(from.edge);
 }
 
-//template<>
-//inline void Graph<std::unordered_set<int>>::removeNeighbour(int from, int neighbour) {
-//    std::unordered_set<int> & neighbours = vertices[from];
-//    std::cout << "hello specka" << std::endl;
-//    neighbours.erase(neighbour);
-//}
-//template<>
-//inline void Graph<std::list<int>>::removeNeighbour(int from, int neighbour) {
-//    std::cout << "list specka" << std::endl;
-//    std::list<int> & neighbours = vertices[from];
-//    neighbours.remove(neighbour);
-//}
-
-//template<typename int>
-//inline void Graph<int, std::vector<int>>::removeNeighbour(int from, int neighbour) {
-//    std::vector<int> & neighbours = vertices[from];
-//    std::cout << "hello specka" << std::endl;
-//    neighbours.erase(std::remove(neighbours.begin(), neighbours.end(), neighbour), neighbours.end());
-//}
-
-
-/* nie dziala u mnie mimo ze ustawilem standard c++20 przy robieniu nowego projektu w clion */
-//template<typename int, typename NeighbourList>
-//void Graph<int, NeighbourList>::removeNeighbour(int from, int neighbour) {
-//    std::erase(vertices[from], neighbour);
-//}
-
-
-
 
 #endif //MAP_COLORING_GRAPH_H
