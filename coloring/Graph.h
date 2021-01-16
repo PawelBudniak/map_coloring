@@ -109,16 +109,20 @@ Graph<V, NeighbourList>::Graph(const std::string &ascii) {
     const char FIRST = '#';
     const char DELIM = '!';
     int i = 0;
+
+    // find the number of vertices
     while (ascii[i] != ' '){
         ++i;
     }
     int n_vert = std::stoi(ascii.substr(0, i));
     vertices = VertexList(n_vert);
+
+    // find edges
     int currV = 0;
     while (ascii[i] != '\n' && i < ascii.size()){
         if(ascii[i] != DELIM){
             int adj = ascii[i] - FIRST;
-            // avoid duplicate edges
+            // avoid duplicate edges, e.g. only add (1,3) and ignore (3,1)
             if (currV < adj)
                 addEdge(currV, adj);
         }

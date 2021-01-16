@@ -20,7 +20,7 @@ inline bool isCorrectColoring(const Graph<T,V> & graph, std::vector<int> colorin
     return true;
 }
 template <typename T, typename V>
-void testAllAlgorithms(Graph<T,V> & graph){
+inline void testAllAlgorithms(Graph<T,V> & graph){
     SECTION("GreedyColoring"){
         auto [n_colors, coloring] = greedyColoring(graph, true);
         CHECK(isCorrectColoring(graph, coloring));

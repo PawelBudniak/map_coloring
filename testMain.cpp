@@ -12,10 +12,29 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include "unittest/TestColoring.h"
 
 void manualMode(Graph<int, std::set<int>>& graph);
 void generatorMode(Graph<int, std::set<int>>& graph);
 void testMode(Graph<int, std::set<int>>& graph);
+
+void testAllAlgorithms2(Graph<LinkedVertex,LinkedVertexList> & graph){
+
+        auto [n_colors, coloring] = greedyColoring(graph, true);
+        if(!isCorrectColoring(graph, coloring))
+            std::cout << "ALARM!";
+
+        auto [n_colors2, coloring2] = dsaturColoring(graph);
+        if(!isCorrectColoring(graph, coloring2))
+            std::cout << "ALARM!";
+
+        Graph<LinkedVertex, LinkedVertexList> graph_copy = graph;
+        auto [n_colors3, coloring3] = colorLinear5(graph);
+        if(!isCorrectColoring(graph, coloring3))
+            std::cout << "ALARM!";
+
+        std::cout << "czilera" << std::endl;
+}
 
 int main(int argc, char** argv)
 {
@@ -28,12 +47,12 @@ int main(int argc, char** argv)
     const int MAX_N_VERT = 90;
 
     int step = 5;
-    int max = 90;
-    int start = 80;
+    int max = 30;
+    int start = 20;
     int limit = 2;
 
     if (max > MAX_N_VERT){
-        throw std::runtime_error("Max vertices is: " + std::to_string(MAX_N_VERT));
+        throw std::runtime_error("Max possible number of vertices is: " + std::to_string(MAX_N_VERT));
     }
 
     for (int n_vert = start; n_vert <= max; n_vert += step) {
@@ -49,6 +68,8 @@ int main(int argc, char** argv)
         while (std::getline(fp, line)) {
             Graph<LinkedVertex, LinkedVertexList> g(line);
             std::cout << g << std::endl;
+            testAllAlgorithms2(g);
+
             std::cout << "################################### " << std::endl;
         }
     }
