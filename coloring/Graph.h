@@ -31,6 +31,8 @@ public:
 
     Graph (int n_vertices): vertices(n_vertices) {}
 
+    Graph(const std::string & ascii);
+
     NeighbourList& operator[] (int idx)             { return vertices[idx]; }
     const NeighbourList& operator[] (int idx) const { return vertices[idx]; }
 
@@ -98,6 +100,29 @@ template<>
 inline void Graph<LinkedVertex, LinkedVertexList>::removeNeighbour(LinkedVertex from)
 {
     vertices[from].erase(from.edge);
+}
+
+template<typename V, typename NeighbourList>
+Graph<V, NeighbourList>::Graph(const std::string &ascii) {
+    int i = 0;
+    while (ascii[i] != ' '){
+        ++i;
+    }
+    int n_vert = std::stoi(ascii.substr(0, i));
+    vertices = VertexList(n_vert);
+    int currV = 0;
+    while (ascii[i] != '\n' && i < ascii.size()){
+        if(ascii[i] != ','){
+            int adj = ascii[i] - 'A';
+            // avoid duplicate edges
+            if (currV < adj)
+                addEdge(currV, adj);
+        }
+        else{
+            ++currV;
+        }
+        ++i;
+    }
 }
 
 

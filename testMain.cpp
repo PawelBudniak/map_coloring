@@ -9,6 +9,9 @@
 #include "CommandLineParser.h"
 #include "coloring/Graph.h"
 #include "coloring/Coloring.h"
+#include <fstream>
+#include <sstream>
+#include <string>
 
 void manualMode(Graph<int, std::set<int>>& graph);
 void generatorMode(Graph<int, std::set<int>>& graph);
@@ -16,54 +19,87 @@ void testMode(Graph<int, std::set<int>>& graph);
 
 int main(int argc, char** argv)
 {
-    CommandLineParser commandParser(argc, argv);
-    commandParser.printParams();
 
-    auto mode = commandParser.getMode();
-    auto algorithm = commandParser.getAlgorithm();
+    const std::string GENERATOR_FILE("generator.exe");
+    const std::string OUTPUT_FILE("graphs.txt");
 
-    Graph<int, std::set<int>> graph(commandParser.getParam(CommandLineParser::N));
+    int step = 5;
+    int max = 25;
+    int start = 10;
+    int limit = 5;
 
-    switch (mode) {
-        case CommandLineParser::MANUAL:     manualMode(graph);      break;
-        case CommandLineParser::GENERATOR:  generatorMode(graph);   break;
-        case CommandLineParser::TEST:       testMode(graph);        break;
-        default:                            exit(1);
+    for (int n_vert = start; n_vert < max; n_vert += step) {
+
+        auto n_vertS = std::to_string(n_vert);
+        auto limitS = std::to_string(limit);
+        std::string generatorCommand(GENERATOR_FILE + " mylimit " + limitS + " " + n_vertS + " -a > " + OUTPUT_FILE);
+        system(generatorCommand.c_str());
+
+
+        std::ifstream fp(OUTPUT_FILE);
+        std::string line;
+        while (std::getline(fp, line)) {
+            Graph<LinkedVertex, LinkedVertexList> g(line);
+            std::cout << g << std::endl;
+            std::cout << "################################### " << std::endl;
+        }
     }
 
-    std::cout << graph << "\n\n\n";
 
-    int maxColor;
-    std::vector<int> colors;
 
-    switch (algorithm) {
-        case CommandLineParser::GREEDY:
-        {
-            auto [a, b] = greedyColoring(graph);
-            maxColor = a;
-            colors = std::move(b);
-            break;
-        }
-        case CommandLineParser::DSATUR:
-        {
-            auto[a, b] = dsaturColoring(graph);
-            maxColor = a;
-            colors = std::move(b);
-            break;
-        }
-        case CommandLineParser::LINEAR5:
-        {
-//            auto [a, b] = colorLinear5(graph);
+    //Graph<LinkedVertex, LinkedVertexList> g("10 bcdefghi,aihjdc,abd,acbjhgfe,adf,aedg,afdh,agdjbi,ahb,bhd");
+    //std::cout << g;
+
+
+
+//    CommandLineParser commandParser(argc, argv);
+//    commandParser.printParams();
+//
+//    auto mode = commandParser.getMode();
+//    auto algorithm = commandParser.getAlgorithm();
+//
+//    Graph<int, std::set<int>> graph(commandParser.getParam(CommandLineParser::N));
+//
+//    switch (mode) {
+//        case CommandLineParser::MANUAL:     manualMode(graph);      break;
+//        case CommandLineParser::GENERATOR:  generatorMode(graph);   break;
+//        case CommandLineParser::TEST:       testMode(graph);        break;
+//        default:                            exit(1);
+//    }
+//
+//    std::cout << graph << "\n\n\n";
+//
+//    int maxColor;
+//    std::vector<int> colors;
+//
+//    switch (algorithm) {
+//        case CommandLineParser::GREEDY:
+//        {
+//            auto [a, b] = greedyColoring(graph);
 //            maxColor = a;
 //            colors = std::move(b);
-            break;
-        }
-    }
-
-    std::cout << maxColor << '\n';
-    for (const auto& color : colors)
-        std::cout << color << ' ';
-
+//            break;
+//        }
+//        case CommandLineParser::DSATUR:
+//        {
+//            auto[a, b] = dsaturColoring(graph);
+//            maxColor = a;
+//            colors = std::move(b);
+//            break;
+//        }
+//        case CommandLineParser::LINEAR5:
+//        {
+////            auto [a, b] = colorLinear5(graph);
+////            maxColor = a;
+////            colors = std::move(b);
+//            break;
+//        }
+//    }
+//
+//    std::cout << maxColor << '\n';
+//    for (const auto& color : colors)
+//        std::cout << color << ' ';
+//
     return 0;
 }
 
