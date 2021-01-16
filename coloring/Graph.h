@@ -104,6 +104,10 @@ inline void Graph<LinkedVertex, LinkedVertexList>::removeNeighbour(LinkedVertex 
 
 template<typename V, typename NeighbourList>
 Graph<V, NeighbourList>::Graph(const std::string &ascii) {
+
+
+    const char FIRST = '#';
+    const char DELIM = '!';
     int i = 0;
     while (ascii[i] != ' '){
         ++i;
@@ -112,8 +116,8 @@ Graph<V, NeighbourList>::Graph(const std::string &ascii) {
     vertices = VertexList(n_vert);
     int currV = 0;
     while (ascii[i] != '\n' && i < ascii.size()){
-        if(ascii[i] != ','){
-            int adj = ascii[i] - 'A';
+        if(ascii[i] != DELIM){
+            int adj = ascii[i] - FIRST;
             // avoid duplicate edges
             if (currV < adj)
                 addEdge(currV, adj);

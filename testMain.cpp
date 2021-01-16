@@ -20,15 +20,23 @@ void testMode(Graph<int, std::set<int>>& graph);
 int main(int argc, char** argv)
 {
 
+    // UWAGA: trzeba najpierw odpalic konfiguracje "generator" zeby sie skompilowal generator
+    // a pozniej dopiero mozna test_main
+
     const std::string GENERATOR_FILE("generator.exe");
     const std::string OUTPUT_FILE("graphs.txt");
+    const int MAX_N_VERT = 90;
 
     int step = 5;
-    int max = 25;
-    int start = 10;
-    int limit = 5;
+    int max = 90;
+    int start = 80;
+    int limit = 2;
 
-    for (int n_vert = start; n_vert < max; n_vert += step) {
+    if (max > MAX_N_VERT){
+        throw std::runtime_error("Max vertices is: " + std::to_string(MAX_N_VERT));
+    }
+
+    for (int n_vert = start; n_vert <= max; n_vert += step) {
 
         auto n_vertS = std::to_string(n_vert);
         auto limitS = std::to_string(limit);

@@ -221,7 +221,7 @@ int MYLIMIT = 5;
 #endif
 
 #ifndef MAXN
-#define MAXN 64            /* the maximum number of vertices; see above */
+#define MAXN 90            /* the maximum number of vertices; see above */
 #endif
 #define MAXE (6*MAXN-12)   /* the maximum number of oriented edges */
 #define MAXF (2*MAXN-4)    /* the maximum number of faces */
@@ -382,7 +382,7 @@ static long am[MAXN];
 /* The following unpacked adjacency matrix is used for general planar
    graphs of connectivity 1 and 2. */
 
-static char am2[MAXN][64];
+static char am2[MAXN][MAXN];
 #define AMADDEDGE(i,j) { am2[i][j] = am2[j][i] = 1; }
 #define AMDELEDGE(i,j) { am2[i][j] = am2[j][i] = 0; }
 #define ISEQADJ(i,j) (am2[i][j] != 0)
@@ -3783,9 +3783,12 @@ write_alpha(FILE *f, int doflip)
 	start=2;
     }
 
+    char MYFIRST = '#';
+    char MYDELIM = '!';
+
     for (i = 1, j=start; j < length; ++i, ++j)
-	if (precode[i]==0) code[j]=',';
-        else code[j]=precode[i]-1+'A';
+	if (precode[i]==0) code[j]=MYDELIM;
+        else code[j]=precode[i]-1+MYFIRST;
 
     code[j-1]='\n';
     if (fwrite(code,sizeof(unsigned char),length,f) != length)
@@ -3797,8 +3800,8 @@ write_alpha(FILE *f, int doflip)
     if (doflip)
       { compute_code_mirror(precode);
         for (i = 1, j=start; j < length; ++i, ++j)
-	    if (precode[i]==0) code[j]=',';
-            else code[j]=precode[i]-1+'A';
+	    if (precode[i]==0) code[j]=MYDELIM;
+            else code[j]=precode[i]-1+MYFIRST;
         code[j-1]='\n';
         if (fwrite(code,sizeof(unsigned char),length,f) != length)
 	  {
