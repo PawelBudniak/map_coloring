@@ -1,6 +1,26 @@
 #include "catch.hpp"
-#include "TestColoring.h"
+#include "../coloring/Graph.h"
 #include "../coloring/Coloring.h"
+
+void testAllAlgorithms(Graph<LinkedVertex,LinkedVertexList> & graph){
+    SECTION("GreedyColoring"){
+        auto [n_colors, coloring] = greedyColoring(graph, true);
+        CHECK(isCorrectColoring(graph, coloring));
+        std::cout << "colors: " << n_colors << std::endl;
+    }
+    SECTION("DSatur"){
+        auto [n_colors, coloring] = dsaturColoring(graph);
+        CHECK(isCorrectColoring(graph, coloring));
+        std::cout << "colors: " << n_colors << std::endl;
+    }
+    SECTION("Linear5"){
+        Graph<LinkedVertex, LinkedVertexList> graph_copy = graph;
+        auto [n_colors, coloring] = colorLinear5(graph);
+        CHECK(isCorrectColoring(graph_copy, coloring));
+        CHECK(n_colors <= 5);
+        std::cout << "colors: " << n_colors << std::endl;
+    }
+}
 
 TEST_CASE("Graph with no edges can be colored with one color", "[isCorrectColoring]"){
     Graph<int> graph(4);

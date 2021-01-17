@@ -230,4 +230,26 @@ private:
     void moveToQ(Qtype & from, Qtype & to, int vertex);
 };
 
+
+// testing functions:
+
+template <typename T, typename V>
+inline bool isCorrectColoring(const Graph<T,V> & graph, std::vector<int> coloring){
+    auto vertices = graph.getVertices();
+    if (vertices.size() != coloring.size()){
+        throw std::invalid_argument("Number of vertices colored doesn't equal the number of vertices in graph");
+    }
+    for (int i=0; i < vertices.size(); ++i){
+        auto & neighbourList = vertices[i];
+        for (int neighbour: neighbourList){
+            if (coloring[i] == coloring[neighbour])
+                return false;
+        }
+    }
+    return true;
+}
+
+void testAllAlgorithmsCorrectness(Graph<LinkedVertex,LinkedVertexList> & graph);
+
+
 #endif //MAP_COLORING_COLORING_H

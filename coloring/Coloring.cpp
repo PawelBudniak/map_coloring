@@ -207,3 +207,18 @@ void Linear5::removeFromUnkownQ(int vertex) {
 }
 
 
+void testAllAlgorithmsCorrectness(Graph<LinkedVertex,LinkedVertexList> & graph){
+
+    auto [n_colors, coloring] = greedyColoring(graph, true);
+    assert(isCorrectColoring(graph, coloring));
+
+    auto [n_colors2, coloring2] = dsaturColoring(graph);
+    assert(isCorrectColoring(graph, coloring2));
+
+    Graph<LinkedVertex, LinkedVertexList> graph_copy = graph;
+    auto [n_colors3, coloring3] = colorLinear5(graph);
+    assert(isCorrectColoring(graph, coloring3));
+}
+
+
+

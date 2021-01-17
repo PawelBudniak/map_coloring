@@ -29,9 +29,10 @@ public:
 
     using VertexList = std::vector<NeighbourList>;
 
-    Graph (int n_vertices): vertices(n_vertices) {}
+    explicit Graph (int n_vertices): vertices(n_vertices) {}
+    Graph () = default;
 
-    Graph(const std::string & ascii);
+    void fromAscii(const std::string & ascii);
 
     NeighbourList& operator[] (int idx)             { return vertices[idx]; }
     const NeighbourList& operator[] (int idx) const { return vertices[idx]; }
@@ -103,7 +104,7 @@ inline void Graph<LinkedVertex, LinkedVertexList>::removeNeighbour(LinkedVertex 
 }
 
 template<typename V, typename NeighbourList>
-Graph<V, NeighbourList>::Graph(const std::string &ascii) {
+void Graph<V, NeighbourList>::fromAscii(const std::string &ascii) {
 
 
     const char FIRST = '#';

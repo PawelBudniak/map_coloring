@@ -1,6 +1,7 @@
 #define VERSION "5.0 - Oct 1, 2015"
 #define SWITCHES "[-uagsEh -Ac#txm#P#bpe#f#q -odGV -v]"
 #define TMP
+#include <stdlib.h>
 
 /* plantri.c :  generate imbedded planar graphs 
 
@@ -4210,6 +4211,34 @@ got_one(int nbtot, int nbop, int connec)
     doflip = oswitch && (nbop == nbtot || nbop == 0);
     wt = doflip ? 2 : 1;
 
+
+
+    int sum =0;
+    for (int i =0; i < 6; ++i){
+        sum += nout[i].lo;
+    }
+    // BUDZIK_LIMIT
+
+    if (nv > 8){
+        int nv_weight;
+        if (nv < 8)
+            nv_weight = nv/4;
+        else if (nv >= 8 && nv < 15)
+            nv_weight = nv/2;
+        else
+            nv_weight = nv * nv;
+
+      if (((double)rand()/(double)RAND_MAX ) > ((double)(sum+1)/   ((double)MYLIMIT*nv_weight))){
+      return;
+      }
+    }
+
+
+
+
+
+
+
     if (Vswitch)
     {
 	if (nbtot == 1 || (oswitch && nbop == 1))
@@ -4225,14 +4254,13 @@ got_one(int nbtot, int nbop, int connec)
 
     ADDBIG(nout[connec],1);
 
-    int sum =0;
-    for (int i =0; i < 6; ++i){
-        sum += nout[i].lo;
-    }
-    // BUDZIK_LIMIT
-    if (sum > MYLIMIT){
-        exit(-3);
-    }
+
+
+
+
+
+
+
     if (oswitch) ADDBIG(nout_op[connec],wt);
 
     if (pswitch)
@@ -4245,6 +4273,12 @@ got_one(int nbtot, int nbop, int connec)
     {
 	if (oswitch) ADDBIG(nout_p_op[outside_face_size],wt);
 	ADDBIG(nout_p[outside_face_size],1);
+    }
+
+    sum += 1;
+    // BUDZIK_LIMIT
+    if (sum > MYLIMIT){
+        exit(-3);
     }
 
 #ifdef STATS
@@ -19083,6 +19117,7 @@ unused_functions(void)
 int
 main(int argc, char *argv[])
 {
+    srand(time(NULL));
     int i;
 #if CPUTIME
     struct tms timestruct0,timestruct1;
