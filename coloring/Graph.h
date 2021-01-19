@@ -27,12 +27,15 @@ template <typename V, typename NeighbourList = std::vector<V>>
 class Graph {
 public:
 
+    using Vertex = V;
+    using NeighboursList = NeighbourList;
     using VertexList = std::vector<NeighbourList>;
 
     explicit Graph (int n_vertices): vertices(n_vertices) {}
     Graph () = default;
 
     void fromAscii(const std::string & ascii);
+    int fromBinary(const std::vector<char>& data, int start);
 
     NeighbourList& operator[] (int idx)             { return vertices[idx]; }
     const NeighbourList& operator[] (int idx) const { return vertices[idx]; }
@@ -100,7 +103,7 @@ inline void Graph<LinkedVertex, LinkedVertexList>::addEdge(int v1, int v2)
 template<>
 inline void Graph<LinkedVertex, LinkedVertexList>::removeNeighbour(LinkedVertex from)
 {
-    vertices[from].erase(from.edge);
+    vertices[int(from)].erase(from.edge);
 }
 
 template<typename V, typename NeighbourList>
@@ -132,6 +135,29 @@ void Graph<V, NeighbourList>::fromAscii(const std::string &ascii) {
         }
         ++i;
     }
+}
+
+template<typename V, typename NeighbourList>
+int Graph<V, NeighbourList>::fromBinary(const std::vector<char>& data, int start) {
+    vertices.clear();
+
+    const char FIRST = 1;
+
+    int n_vert = static_cast<unsigned char>(data[start++]);
+    vertices = VertexList(n_vert);
+
+    for (int i = 0; i < n_vert; ++i)
+    {
+        int temp;
+        while ((temp = static_cast<unsigned char>(data[start++])) > 0)
+        {
+            int adj = temp - FIRST;
+            if (i < adj)
+                addEdge(i, adj);
+        }
+    }
+
+    return start;
 }
 
 
