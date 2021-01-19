@@ -27,6 +27,8 @@ template <typename V, typename NeighbourList = std::vector<V>>
 class Graph {
 public:
 
+    using Vertex = V;
+    using NeighboursList = NeighbourList;
     using VertexList = std::vector<NeighbourList>;
 
     explicit Graph (int n_vertices): vertices(n_vertices) {}
@@ -100,7 +102,7 @@ inline void Graph<LinkedVertex, LinkedVertexList>::addEdge(int v1, int v2)
 template<>
 inline void Graph<LinkedVertex, LinkedVertexList>::removeNeighbour(LinkedVertex from)
 {
-    vertices[from].erase(from.edge);
+    vertices[int(from)].erase(from.edge);
 }
 
 template<typename V, typename NeighbourList>

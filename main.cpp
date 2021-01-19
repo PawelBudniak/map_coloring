@@ -11,6 +11,7 @@
 #include "coloring/Graph.h"
 #include "coloring/Coloring.h"
 #include "Generator.h"
+#include "Timer.h"
 
 void manualMode(Graph<LinkedVertex, LinkedVertexList>& graph);
 void generatorMode(Graph<LinkedVertex, LinkedVertexList>& graph, int nVert);
@@ -55,9 +56,9 @@ int main(int argc, char** argv)
         }
         case CommandLineParser::LINEAR5:
         {
-//            auto [a, b] = colorLinear5(graph);
-//            maxColor = a;
-//            colors = std::move(b);
+            auto [a, b] = colorLinear5(graph);
+            maxColor = a;
+            colors = std::move(b);
             break;
         }
     }
@@ -98,26 +99,46 @@ void generatorMode(Graph<LinkedVertex, LinkedVertexList>& graph, int nVert)
     std::getline(fp, line);
 
     graph.fromAscii(line);
-
-
-
 }
 
 void testMode(int start, int max, int step, int maxGraphs)
 {
+    using namespace timer;
+
+    Timer<milliseconds> timer;
+
+    auto algorithm1 = &greedyColoring<LinkedVertex, LinkedVertexList>;
+    auto algorithm2 = &dsaturColoring<LinkedVertex, LinkedVertexList>;
+    auto algorithm3 = colorLinear5;
+
+    std::vector<double> times1;
+    std::vector<double> times2;
+    std::vector<double> times3;
 
     for (int nVert = start; nVert <= max; nVert += step) {
         Generator::generate(nVert, maxGraphs);
 
         std::ifstream fp(Generator::OUTPUT_FILE);
         std::string line;
+
+        double avg1 = 0, avg2 = 0, avg3 = 0;
+
         while (std::getline(fp, line)) {
             Graph<LinkedVertex, LinkedVertexList> g;
             g.fromAscii(line);
-            std::cout << g << std::endl;
-            testAllAlgorithmsCorrectness(g);
-            std::cout << "################################### " << std::endl;
+
+            avg1 += timer.time(algorithm1, g, false);
+            avg2 += timer.time(algorithm2, g);
+            avg3 += timer.time(algorithm3, g);
+
+//            std::cout << g << std::endl;
+//            testAllAlgorithmsCorrectness(g);
+//            std::cout << "################################### " << std::endl;
         }
+
+        times1.push_back(avg1 / maxGraphs);
+        times2.push_back(avg2 / maxGraphs);
+        times3.push_back(avg3 / maxGraphs);
     }
 
     remove(Generator::OUTPUT_FILE.c_str());

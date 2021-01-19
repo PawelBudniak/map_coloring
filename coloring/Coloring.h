@@ -84,7 +84,7 @@ auto greedyColoring(const Graph<Vertex, NeighbourList>& graph, bool shuffle = fa
 }
 
 template <typename Vertex, typename NeighbourList>
-auto dsaturColoring(const Graph<Vertex, NeighbourList>& graph, bool shuffle = false) -> std::tuple<int, std::vector<int>>
+auto dsaturColoring(const Graph<Vertex, NeighbourList>& graph) -> std::tuple<int, std::vector<int>>
 {
     const auto& vertices = graph.getVertices();
     auto maxColor = 0;

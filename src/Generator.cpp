@@ -1,6 +1,8 @@
 
 #include <Generator.h>
 
+#include <stdexcept>
+
 const std::string Generator::GENERATOR_FILE = "generator.exe";
 const std::string Generator::OUTPUT_FILE = "graphs.txt";
 bool Generator::squelchStderr = false;
