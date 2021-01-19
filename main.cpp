@@ -15,7 +15,7 @@
 
 void manualMode(Graph<LinkedVertex, LinkedVertexList>& graph);
 void generatorMode(Graph<LinkedVertex, LinkedVertexList>& graph, int nVert);
-void testMode(int start, int max, int step, int maxGraphs);
+void testMode(int start, int maxVertices, int step, int nGraphs);
 
 int main(int argc, char** argv)
 {
@@ -26,15 +26,20 @@ int main(int argc, char** argv)
     auto algorithm = commandParser.getAlgorithm();
 
     Graph<LinkedVertex, LinkedVertexList> graph(commandParser.getParam(CommandLineParser::N));
+    
+    auto n = commandParser.getParam(CommandLineParser::N);
+    auto k = commandParser.getParam(CommandLineParser::K);
+    auto r = commandParser.getParam(CommandLineParser::R);
+    auto step = commandParser.getParam(CommandLineParser::STEP);
 
     switch (mode) {
-        case CommandLineParser::MANUAL:     manualMode(graph);      break;
+        case CommandLineParser::MANUAL:     manualMode(graph);                                 break;
         case CommandLineParser::GENERATOR:  generatorMode(graph, CommandLineParser::N);   break;
-        case CommandLineParser::TEST:       testMode(0,0,0,0);        break;
+        case CommandLineParser::TEST:       testMode(n, n + step * k, step, r);         break;
         default:                            exit(1);
     }
 
-    std::cout << graph << "\n\n\n";
+//    std::cout << graph << "\n\n\n";
 
     int maxColor;
     std::vector<int> colors;
@@ -63,9 +68,9 @@ int main(int argc, char** argv)
         }
     }
 
-    std::cout << maxColor << '\n';
-    for (const auto& color : colors)
-        std::cout << color << ' ';
+//    std::cout << maxColor << '\n';
+//    for (const auto& color : colors)
+//        std::cout << color << ' ';
 
     return 0;
 }
@@ -101,11 +106,11 @@ void generatorMode(Graph<LinkedVertex, LinkedVertexList>& graph, int nVert)
     graph.fromAscii(line);
 }
 
-void testMode(int start, int max, int step, int maxGraphs)
+void testMode(int start, int maxVertices, int step, int nGraphs)
 {
     using namespace timer;
 
-    Timer<milliseconds> timer;
+    Timer<microseconds> timer;
 
     auto algorithm1 = &greedyColoring<LinkedVertex, LinkedVertexList>;
     auto algorithm2 = &dsaturColoring<LinkedVertex, LinkedVertexList>;
@@ -115,8 +120,8 @@ void testMode(int start, int max, int step, int maxGraphs)
     std::vector<double> times2;
     std::vector<double> times3;
 
-    for (int nVert = start; nVert <= max; nVert += step) {
-        Generator::generate(nVert, maxGraphs);
+    for (int nVert = start; nVert <= maxVertices; nVert += step) {
+        Generator::generate(nVert, nGraphs);
 
         std::ifstream fp(Generator::OUTPUT_FILE);
         std::string line;
@@ -127,19 +132,32 @@ void testMode(int start, int max, int step, int maxGraphs)
             Graph<LinkedVertex, LinkedVertexList> g;
             g.fromAscii(line);
 
+//            std::cout << g << std::endl;
+////            testAllAlgorithmsCorrectness(g);
+//            std::cout << "###################################" << std::endl;
+
             avg1 += timer.time(algorithm1, g, false);
             avg2 += timer.time(algorithm2, g);
             avg3 += timer.time(algorithm3, g);
-
-//            std::cout << g << std::endl;
-//            testAllAlgorithmsCorrectness(g);
-//            std::cout << "################################### " << std::endl;
         }
 
-        times1.push_back(avg1 / maxGraphs);
-        times2.push_back(avg2 / maxGraphs);
-        times3.push_back(avg3 / maxGraphs);
+        times1.push_back(avg1 / nGraphs);
+        times2.push_back(avg2 / nGraphs);
+        times3.push_back(avg3 / nGraphs);
     }
+
+    for (auto avg : times1)
+        std::cout << avg << ' ';
+
+    std::cout << "\n\n\n\n";
+
+    for (auto avg : times2)
+        std::cout << avg << ' ';
+
+    std::cout << "\n\n\n\n";
+
+    for (auto avg : times3)
+        std::cout << avg << ' ';
 
     remove(Generator::OUTPUT_FILE.c_str());
 }
