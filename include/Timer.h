@@ -14,7 +14,7 @@ namespace timer {
 
     template<typename Resolution>
     class Timer {
-        using clock = std::chrono::high_resolution_clock;
+        using clock = std::chrono::steady_clock;
 
     public:
         [[nodiscard]] double getRatio() const { return double(Resolution::period::num) / Resolution::period::den; }
@@ -22,11 +22,11 @@ namespace timer {
         //  Time regular functions, lambdas and functors
         template<typename Callable, typename... Args>
         double time(Callable f, Args &&... args) {
-            auto start = clock::now();
+            auto start = clock::now().time_since_epoch();
 
             f(std::forward<Args>(args)...);
 
-            Resolution duration = std::chrono::duration_cast<Resolution>(clock::now() - start);
+            Resolution duration = std::chrono::duration_cast<Resolution>(clock::now().time_since_epoch() - start);
 
             return duration.count();
         }
@@ -34,11 +34,11 @@ namespace timer {
         //  Time function templates
         template<typename... Args>
         double time(void (*f)(Args...), Args &&... args) {
-            auto start = clock::now();
+            auto start = clock::now().time_since_epoch();
 
             f(std::forward<Args>(args)...);
 
-            Resolution duration = std::chrono::duration_cast<Resolution>(clock::now() - start);
+            Resolution duration = std::chrono::duration_cast<Resolution>(clock::now().time_since_epoch() - start);
 
             return duration.count();
         }
@@ -46,11 +46,11 @@ namespace timer {
         //  Time function templates with return type
         template<typename R, typename... Args>
         double time(R (*f)(Args...), Args &&... args) {
-            auto start = clock::now();
+            auto start = clock::now().time_since_epoch();
 
             f(std::forward<Args>(args)...);
 
-            Resolution duration = std::chrono::duration_cast<Resolution>(clock::now() - start);
+            Resolution duration = std::chrono::duration_cast<Resolution>(clock::now().time_since_epoch() - start);
 
             return duration.count();
         }
@@ -58,12 +58,12 @@ namespace timer {
         //  Time member functions
         template<typename T, typename... Args>
         double time(void (T::*f)(Args...), Args &&... args) {
-            auto start = clock::now();
+            auto start = clock::now().time_since_epoch();
 
             T temp;
             (temp.*f)(std::forward<Args>(args)...);
 
-            Resolution duration = std::chrono::duration_cast<Resolution>(clock::now() - start);
+            Resolution duration = std::chrono::duration_cast<Resolution>(clock::now().time_since_epoch() - start);
 
             return duration.count();
         }
@@ -71,12 +71,12 @@ namespace timer {
         //  Time member function with return type
         template<typename T, typename R, typename... Args>
         double time(R (T::*f)(Args...), Args &&... args) {
-            auto start = clock::now();
+            auto start = clock::now().time_since_epoch();
 
             T temp;
             (temp.*f)(std::forward<Args>(args)...);
 
-            Resolution duration = std::chrono::duration_cast<Resolution>(clock::now() - start);
+            Resolution duration = std::chrono::duration_cast<Resolution>(clock::now().time_since_epoch() - start);
 
             return duration.count();
         }
@@ -84,11 +84,11 @@ namespace timer {
         //  Time member functions without default constructor
         template<typename T, typename... Args>
         double time(void (T::*f)(Args...), T obj, Args &&... args) {
-            auto start = clock::now();
+            auto start = clock::now().time_since_epoch();
 
             (obj.*f)(std::forward<Args>(args)...);
 
-            Resolution duration = std::chrono::duration_cast<Resolution>(clock::now() - start);
+            Resolution duration = std::chrono::duration_cast<Resolution>(clock::now().time_since_epoch() - start);
 
             return duration.count();
         }

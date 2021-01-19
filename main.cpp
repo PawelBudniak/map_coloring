@@ -6,6 +6,7 @@
 
 #include <set>
 #include <fstream>
+#include <windows.h>
 
 #include "CommandLineParser.h"
 #include "coloring/Graph.h"
@@ -121,20 +122,25 @@ void testMode(int start, int maxVertices, int step, int nGraphs)
     std::vector<double> times3;
 
     for (int nVert = start; nVert <= maxVertices; nVert += step) {
-        Generator::generate(nVert, nGraphs);
+        Generator::generate(nVert, nGraphs + 1);
 
-        std::ifstream fp(Generator::OUTPUT_FILE);
-        std::string line;
+//        Sleep(10000);
+
+        std::ifstream fp(Generator::OUTPUT_FILE, std::ios::binary);
+        std::vector<char> graphsData((std::istreambuf_iterator<char>(fp)), std::istreambuf_iterator<char>());
+
+        Graph<LinkedVertex, LinkedVertexList> g;
+        int dataStart = 0;
 
         double avg1 = 0, avg2 = 0, avg3 = 0;
 
-        while (std::getline(fp, line)) {
-            Graph<LinkedVertex, LinkedVertexList> g;
-            g.fromAscii(line);
-
-//            std::cout << g << std::endl;
-////            testAllAlgorithmsCorrectness(g);
+        while ((dataStart = g.fromBinary(graphsData, dataStart)) < graphsData.size() - 1)
+        {
+            std::cout << g << std::endl;
+//            std::cout << nVert << " ###################################\n";
+//            testAllAlgorithmsCorrectness(g);
 //            std::cout << "###################################" << std::endl;
+
 
             avg1 += timer.time(algorithm1, g, false);
             avg2 += timer.time(algorithm2, g);
