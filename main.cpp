@@ -124,8 +124,6 @@ void testMode(int start, int maxVertices, int step, int nGraphs)
     for (int nVert = start; nVert <= maxVertices; nVert += step) {
         Generator::generate(nVert, nGraphs + 1);
 
-//        Sleep(10000);
-
         std::ifstream fp(Generator::OUTPUT_FILE, std::ios::binary);
         std::vector<char> graphsData((std::istreambuf_iterator<char>(fp)), std::istreambuf_iterator<char>());
 
@@ -134,14 +132,13 @@ void testMode(int start, int maxVertices, int step, int nGraphs)
 
         double avg1 = 0, avg2 = 0, avg3 = 0;
 
+        //  Umie czytac z binarnego pliku juz
+        //  Paramwtry do map_coloring(najwieksze dla jakiego dziala): -m3 -n 109 -k 0 -r 100 -step 10
         while ((dataStart = g.fromBinary(graphsData, dataStart)) < graphsData.size() - 1)
         {
-            std::cout << g << std::endl;
-//            std::cout << nVert << " ###################################\n";
-//            testAllAlgorithmsCorrectness(g);
-//            std::cout << "###################################" << std::endl;
+//            std::cout << g << std::endl;
 
-
+            //  Timer dziala zajebiscie prosze z neigo korzystac :)
             avg1 += timer.time(algorithm1, g, false);
             avg2 += timer.time(algorithm2, g);
             avg3 += timer.time(algorithm3, g);
@@ -155,12 +152,12 @@ void testMode(int start, int maxVertices, int step, int nGraphs)
     for (auto avg : times1)
         std::cout << avg << ' ';
 
-    std::cout << "\n\n\n\n";
+    std::cout << "\n\n";
 
     for (auto avg : times2)
         std::cout << avg << ' ';
 
-    std::cout << "\n\n\n\n";
+    std::cout << "\n\n";
 
     for (auto avg : times3)
         std::cout << avg << ' ';

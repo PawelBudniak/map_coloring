@@ -122,6 +122,8 @@ auto Linear5::color() -> std::tuple<int, std::vector<int>> {
     }
     // TODO: xD
     int n_colors = std::set<int>(coloring.begin(), coloring.end()).size();
+    if (n_colors > 5)
+        throw std::runtime_error("Beka " + std::to_string(n_colors));
     assert(n_colors <= 5);
     return {n_colors, coloring};
 }

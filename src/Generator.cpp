@@ -15,11 +15,11 @@ void Generator::generate(int nVert, int maxGraphs) {
 //    }
 
     std::string squelcher = "";
-    if (squelchStderr){
+    if (squelchStderr) {
 #ifdef _WIN32
         squelcher = " 2 > nul";
 #else
-        squelcher = "2 > dev/null";
+        squelcher = " 2 > dev/null";
 #endif
     }
 
@@ -28,6 +28,6 @@ void Generator::generate(int nVert, int maxGraphs) {
     auto s_maxGraphs = std::to_string(maxGraphs);
     std::string generatorCommand(
             GENERATOR_FILE + " mylimit " + s_maxGraphs +
-            " " + s_nVert + " " + graphTypes + " " + OUTPUT_FILE + squelcher);
+            " " + s_nVert + " " + graphTypes + " " + OUTPUT_FILE);
     system(generatorCommand.c_str());
 }

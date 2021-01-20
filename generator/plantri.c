@@ -222,7 +222,7 @@ int MYLIMIT = 5;
 #endif
 
 #ifndef MAXN
-#define MAXN 256            /* the maximum number of vertices; see above */
+#define MAXN 128            /* the maximum number of vertices; see above */
 #endif
 #define MAXE (6*MAXN-12)   /* the maximum number of oriented edges */
 #define MAXF (2*MAXN-4)    /* the maximum number of faces */
@@ -4219,19 +4219,19 @@ got_one(int nbtot, int nbop, int connec)
     }
     // BUDZIK_LIMIT
 
-    if (nv > 8){
-        int nv_weight;
-        if (nv < 8)
-            nv_weight = nv/4;
-        else if (nv >= 8 && nv < 15)
-            nv_weight = nv/2;
-        else
-            nv_weight = nv * nv;
-
+//    if (nv > 8){
+//        int nv_weight;
+//        if (nv < 8)
+//            nv_weight = nv/4;
+//        else if (nv >= 8 && nv < 15)
+//            nv_weight = nv/2;
+//        else
+//            nv_weight = nv * nv;
+//
 //      if (((double)rand()/(double)RAND_MAX ) > ((double)(sum+1)/   ((double)MYLIMIT*nv_weight))){
 //      return;
 //      }
-    }
+//    }
 
 
 
@@ -18464,7 +18464,8 @@ polytope_dispatch(void)
     startingsize = (minimumdeg == 4 ? 6 : (minimumdeg == 5 ? 12 : 4));
 
     CHECKRANGE(maxnv,"n",2,MAXN);
-    CHECKRANGE(maxnv,"n",2,64);
+//    CHECKRANGE(maxnv,"n",2,64);
+    CHECKRANGE(maxnv,"n",2,256);
     CHECKRANGE(minpolyconnec,"-c",1,3);
     CHECKRANGE(minpolydeg,"-m",1,5);
 
