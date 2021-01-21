@@ -14,6 +14,7 @@
 #include <utility>
 #include <stack>
 #include <optional>
+#include <algorithm>
 
 #include "Graph.h"
 

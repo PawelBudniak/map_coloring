@@ -3,8 +3,11 @@
 
 #include <string>
 #include <vector>
+#include "../coloring/Graph.h"
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/boyer_myrvold_planar_test.hpp>
 
-class Generator{
+class Generator {
 
 
 public:
@@ -16,7 +19,13 @@ public:
     static const int MAX_N_VERT = 90;
 
 
-    static void generate(int nVert, int maxGraphs);
+    static void generateToFile(int nVert, int maxGraphs);
+
+    static Graph<LinkedVertex, LinkedVertexList> getGraph(int nVert, int batchSize);
+
+private:
+    static void combinations_k2(int nVert, std::vector<std::pair<int, int>> &result);
+    static int n_combinations_k2 (int n) { return n*(n-1)/2; }
 
 };
 

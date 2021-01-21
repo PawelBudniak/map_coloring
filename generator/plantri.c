@@ -3,7 +3,7 @@
 #define TMP
 #include <stdlib.h>
 
-/* plantri.c :  generate imbedded planar graphs 
+/* plantri.c :  generateToFile imbedded planar graphs
 
   This program generates many different classes of graph imbedded on 
   a sphere.  Exact specifications and instructions for use can be found

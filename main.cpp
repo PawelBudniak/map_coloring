@@ -6,7 +6,6 @@
 
 #include <set>
 #include <fstream>
-#include <windows.h>
 
 #include "CommandLineParser.h"
 #include "coloring/Graph.h"
@@ -98,7 +97,7 @@ void manualMode(Graph<LinkedVertex, LinkedVertexList>& graph)
 
 void generatorMode(Graph<LinkedVertex, LinkedVertexList>& graph, int nVert)
 {
-    Generator::generate(nVert, 1);
+    Generator::generateToFile(nVert, 1);
 
     std::ifstream fp(Generator::OUTPUT_FILE);
     std::string line;
@@ -122,7 +121,7 @@ void testMode(int start, int maxVertices, int step, int nGraphs)
     std::vector<double> times3;
 
     for (int nVert = start; nVert <= maxVertices; nVert += step) {
-        Generator::generate(nVert, nGraphs + 1);
+        Generator::generateToFile(nVert, nGraphs + 1);
 
 //        Sleep(10000);
 
@@ -168,4 +167,3 @@ void testMode(int start, int maxVertices, int step, int nGraphs)
     remove(Generator::OUTPUT_FILE.c_str());
 }
 
-// nie wiem gdzie dac ta funkcje xD w unittestach tak raczej nie pasuje
