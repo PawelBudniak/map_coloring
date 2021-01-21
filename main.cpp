@@ -13,6 +13,33 @@
 #include "Generator.h"
 #include "Timer.h"
 
+struct TestResults
+{
+    std::vector<double> avgTimes1;
+    std::vector<double> avgTimes2;
+    std::vector<double> avgTimes3;
+    std::vector<double> avgTimes4;
+
+    std::vector<double> avgColor1;
+    std::vector<double> avgColor2;
+    std::vector<double> avgColor3;
+    std::vector<double> avgColor4;
+
+    void updateResults(double time1, double time2, double time3, double time4,
+                       double color1, double color2, double color3, double color4, int nTests)
+    {
+        avgTimes1.push_back(time1 / nTests);
+        avgTimes2.push_back(time2 / nTests);
+        avgTimes3.push_back(time3 / nTests);
+        avgTimes4.push_back(time4 / nTests);
+
+        avgColor1.push_back(color1 / nTests);
+        avgColor2.push_back(color2 / nTests);
+        avgColor3.push_back(color3 / nTests);
+        avgColor4.push_back(color4 / nTests);
+    }
+};
+
 void manualMode(Graph<LinkedVertex, LinkedVertexList>& graph);
 void generatorMode(Graph<LinkedVertex, LinkedVertexList>& graph, int nVert);
 void testMode(int start, int maxVertices, int step, int nGraphs);
@@ -116,9 +143,7 @@ void testMode(int start, int maxVertices, int step, int nGraphs)
     auto algorithm2 = &dsaturColoring<LinkedVertex, LinkedVertexList>;
     auto algorithm3 = colorLinear5;
 
-    std::vector<double> times1;
-    std::vector<double> times2;
-    std::vector<double> times3;
+    TestResults results;
 
     for (int nVert = start; nVert <= maxVertices; nVert += step) {
         Generator::generate(nVert, nGraphs);
@@ -126,37 +151,81 @@ void testMode(int start, int maxVertices, int step, int nGraphs)
         std::ifstream fp(Generator::OUTPUT_FILE);
         std::string line;
 
-        double avg1 = 0, avg2 = 0, avg3 = 0;
+        double avgTime1 = 0, avgTime2 = 0, avgTime3 = 0, avgTime4 = 0,
+               avgColor1 = 0, avgColor2 = 0, avgColor3 = 0, avgColor4 = 0;
 
         while (std::getline(fp, line)) {
             Graph<LinkedVertex, LinkedVertexList> g;
             g.fromAscii(line);
 
-//            std::cout << g << std::endl;
-////            testAllAlgorithmsCorrectness(g);
-//            std::cout << "###################################" << std::endl;
+            auto copy = g;
 
-            avg1 += timer.time(algorithm1, g, false);
-            avg2 += timer.time(algorithm2, g);
-            avg3 += timer.time(algorithm3, g);
+//            std::cout << g << std::endl;
+
+            auto [time1, colorsUsed1, colors1] = timer.time(algorithm1, g, false);
+            auto [time2, colorsUsed2, colors2] = timer.time(algorithm1, g, true);
+            auto [time3, colorsUsed3, colors3] = timer.time(algorithm2, g);
+            auto [time4, colorsUsed4, colors4] = timer.time(algorithm3, g);
+
+            if (!isCorrectColoring(g, colors1))
+                std::cout << "Dupa1\n";
+            if (!isCorrectColoring(g, colors2))
+                std::cout << "Dupa2\n";
+            if (!isCorrectColoring(g, colors3))
+                std::cout << "Dupa3\n";
+            if (!isCorrectColoring(g, colors4))
+                std::cout << "Dupa4\n";
+
+            avgTime1 += time1;
+            avgTime2 += time2;
+            avgTime3 += time3;
+            avgTime4 += time4;
+
+            avgColor1 += colorsUsed1;
+            avgColor2 += colorsUsed2;
+            avgColor3 += colorsUsed3;
+            avgColor4 += colorsUsed4;
         }
 
-        times1.push_back(avg1 / nGraphs);
-        times2.push_back(avg2 / nGraphs);
-        times3.push_back(avg3 / nGraphs);
+        results.updateResults(avgTime1, avgTime2, avgTime3, avgTime4, avgColor1, avgColor2, avgColor3, avgColor4, nGraphs);
     }
 
-    for (auto avg : times1)
+    for (auto avg : results.avgTimes1)
         std::cout << avg << ' ';
 
-    std::cout << "\n\n\n\n";
+    std::cout << "\n";
 
-    for (auto avg : times2)
+    for (auto avg : results.avgTimes2)
         std::cout << avg << ' ';
 
-    std::cout << "\n\n\n\n";
+    std::cout << "\n";
 
-    for (auto avg : times3)
+    for (auto avg : results.avgTimes3)
+        std::cout << avg << ' ';
+
+    std::cout << "\n";
+
+    for (auto avg : results.avgTimes4)
+        std::cout << avg << ' ';
+
+    std::cout << "\n\n";
+
+    for (auto avg : results.avgColor1)
+        std::cout << avg << ' ';
+
+    std::cout << "\n";
+
+    for (auto avg : results.avgColor2)
+        std::cout << avg << ' ';
+
+    std::cout << "\n";
+
+    for (auto avg : results.avgColor3)
+        std::cout << avg << ' ';
+
+    std::cout << "\n";
+
+    for (auto avg : results.avgColor4)
         std::cout << avg << ' ';
 
     remove(Generator::OUTPUT_FILE.c_str());
