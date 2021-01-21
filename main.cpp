@@ -124,7 +124,7 @@ void manualMode(Graph<LinkedVertex, LinkedVertexList>& graph)
 
 void generatorMode(Graph<LinkedVertex, LinkedVertexList>& graph, int nVert)
 {
-    Generator::generate(nVert, 1);
+    Generator::generateToFile(nVert, 1);
 
     std::ifstream fp(Generator::OUTPUT_FILE);
     std::string line;
@@ -146,7 +146,7 @@ void testMode(int start, int maxVertices, int step, int nGraphs)
     TestResults results;
 
     for (int nVert = start; nVert <= maxVertices; nVert += step) {
-        Generator::generate(nVert, nGraphs);
+        Generator::generateToFile(nVert, nGraphs + 1);
 
         std::ifstream fp(Generator::OUTPUT_FILE);
         std::string line;

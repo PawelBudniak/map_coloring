@@ -3,7 +3,7 @@
 #define TMP
 #include <stdlib.h>
 
-/* plantri.c :  generate imbedded planar graphs 
+/* plantri.c :  generateToFile imbedded planar graphs
 
   This program generates many different classes of graph imbedded on 
   a sphere.  Exact specifications and instructions for use can be found
@@ -222,7 +222,7 @@ int MYLIMIT = 5;
 #endif
 
 #ifndef MAXN
-#define MAXN 90            /* the maximum number of vertices; see above */
+#define MAXN 256            /* the maximum number of vertices; see above */
 #endif
 #define MAXE (6*MAXN-12)   /* the maximum number of oriented edges */
 #define MAXF (2*MAXN-4)    /* the maximum number of faces */
@@ -4228,9 +4228,9 @@ got_one(int nbtot, int nbop, int connec)
         else
             nv_weight = nv * nv;
 
-      if (((double)rand()/(double)RAND_MAX ) > ((double)(sum+1)/   ((double)MYLIMIT*nv_weight))){
-      return;
-      }
+//      if (((double)rand()/(double)RAND_MAX ) > ((double)(sum+1)/   ((double)MYLIMIT*nv_weight))){
+//      return;
+//      }
     }
 
 
