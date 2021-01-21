@@ -38,7 +38,9 @@ void Generator::generateToFile(int nVert, int maxGraphs) {
     system(generatorCommand.c_str());
 }
 
-Graph<LinkedVertex, LinkedVertexList> Generator::getGraph(int nVert, int batchSize=0) {
+Graph<LinkedVertex, LinkedVertexList> Generator::getGraph(int nVert,
+                                                          std::optional<std::vector<std::pair<int,int>>> edge_combinations=std::nullopt,
+                                                          int batchSize = 0){
     using namespace boost;
     typedef adjacency_list<vecS, vecS, undirectedS> MyGraphType;
 
@@ -52,8 +54,13 @@ Graph<LinkedVertex, LinkedVertexList> Generator::getGraph(int nVert, int batchSi
 
     MyGraphType g;
 
-    std::vector<std::pair<int,int>> possible_edges(n_combinations_k2(nVert));
-    combinations_k2(nVert, possible_edges);
+    std::vector<std::pair<int, int>> possible_edges;
+    if (edge_combinations.has_value()) {
+        possible_edges = std::move(edge_combinations.value());
+    }
+    else {
+        possible_edges = combinations_k2(nVert);
+    }
 
     std::shuffle(possible_edges.begin(), possible_edges.end(), std::default_random_engine(timeSeed));
     int count = 0;
@@ -106,10 +113,12 @@ Graph<LinkedVertex, LinkedVertexList> Generator::getGraph(int nVert, int batchSi
 }
 
 //
-void Generator::combinations_k2(int nVert, std::vector<std::pair<int, int>> &result) {
+std::vector<std::pair<int,int>> Generator::combinations_k2(int nVert) {
+    std::vector<std::pair<int,int>> result(n_combinations_k2(nVert));
     int count = 0;
     for (int i =0; i < nVert; ++i){
         for (int j =i+1; j < nVert; ++j)
             result[count++] = std::pair<int,int>(i,j);
     }
+    return result;
 }

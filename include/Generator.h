@@ -21,10 +21,10 @@ public:
 
     static void generateToFile(int nVert, int maxGraphs);
 
-    static Graph<LinkedVertex, LinkedVertexList> getGraph(int nVert, int batchSize);
+    static Graph<LinkedVertex, LinkedVertexList> getGraph(int nVert, std::optional<std::vector<std::pair<int,int>>> edge_combinations, int batchSize);
 
 private:
-    static void combinations_k2(int nVert, std::vector<std::pair<int, int>> &result);
+    static std::vector<std::pair<int,int>> combinations_k2(int nVert);
     static int n_combinations_k2 (int n) { return n*(n-1)/2; }
 
 };
