@@ -145,35 +145,41 @@ void testMode(int start, int maxVertices, int step, int nGraphs)
 
     TestResults results;
 
-    for (int nVert = start; nVert <= maxVertices; nVert += step) {
-        Generator::generateToFile(nVert, nGraphs + 1);
-
-        std::ifstream fp(Generator::OUTPUT_FILE);
-        std::string line;
-
+    for (int nVert = start; nVert <= maxVertices; nVert += step)
+    {
         double avgTime1 = 0, avgTime2 = 0, avgTime3 = 0, avgTime4 = 0,
                avgColor1 = 0, avgColor2 = 0, avgColor3 = 0, avgColor4 = 0;
 
-        while (std::getline(fp, line)) {
-            Graph<LinkedVertex, LinkedVertexList> g;
-            g.fromAscii(line);
+        Generator g;
 
-            auto copy = g;
+        for (int i = 0; i < nGraphs; ++i)
+        {
+            Graph<LinkedVertex, LinkedVertexList> graph = g.getGraph(nVert, 0);
 
-//            std::cout << g << std::endl;
+            auto copy = graph;
 
-            auto [time1, colorsUsed1, colors1] = timer.time(algorithm1, g, false);
-            auto [time2, colorsUsed2, colors2] = timer.time(algorithm1, g, true);
-            auto [time3, colorsUsed3, colors3] = timer.time(algorithm2, g);
-            auto [time4, colorsUsed4, colors4] = timer.time(algorithm3, g);
+//            std::cout << graph << std::endl;
 
-            if (!isCorrectColoring(g, colors1))
+            auto [time1, colorsUsed1, colors1] = timer.time(algorithm1, graph, false);
+            auto [time2, colorsUsed2, colors2] = timer.time(algorithm1, graph, true);
+
+            std::cout << graph << '\n';
+
+            auto [time3, colorsUsed3, colors3] = timer.time(algorithm2, graph);
+
+            std::cout << graph << '\n';
+
+            auto [time4, colorsUsed4, colors4] = timer.time(algorithm3, graph);
+
+            std::cout << colorsUsed1 << ' ' << colorsUsed2 << ' ' <<colorsUsed3 << ' ' <<colorsUsed4 << '\n';
+
+            if (!isCorrectColoring(graph, colors1))
                 std::cout << "Dupa1\n";
-            if (!isCorrectColoring(g, colors2))
+            if (!isCorrectColoring(graph, colors2))
                 std::cout << "Dupa2\n";
-            if (!isCorrectColoring(g, colors3))
+            if (!isCorrectColoring(graph, colors3))
                 std::cout << "Dupa3\n";
-            if (!isCorrectColoring(g, colors4))
+            if (!isCorrectColoring(graph, colors4))
                 std::cout << "Dupa4\n";
 
             avgTime1 += time1;

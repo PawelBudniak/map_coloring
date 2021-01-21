@@ -32,7 +32,6 @@ private:
 
     static std::vector<std::pair<int,int>> combinations_k2(int nVert);
     static int n_combinations_k2 (int n) { return n*(n-1)/2; }
-
 };
 
 #endif //MAP_COLORING_GENERATOR_H
