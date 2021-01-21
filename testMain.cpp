@@ -46,7 +46,7 @@ std::vector<std::pair<int,int>> combinations_k2(int nVert){
 }
 
 
-Graph<LinkedVertex, LinkedVertexList> getGraph(int nVert, std::optional<std::vector<std::pair<int,int>>> edge_combinations=std::nullopt, int batchSize = 0 ){
+Graph<LinkedVertex, LinkedVertexList> getGraph(int nVert, int batchSize = 0 ){
     using namespace boost;
     typedef adjacency_list<vecS, vecS, undirectedS> MyGraphType;
 
@@ -61,12 +61,7 @@ Graph<LinkedVertex, LinkedVertexList> getGraph(int nVert, std::optional<std::vec
     MyGraphType g;
 
     std::vector<std::pair<int, int>> possible_edges;
-    if (edge_combinations.has_value()) {
-        possible_edges = std::move(edge_combinations.value());
-    }
-    else {
-        possible_edges = combinations_k2(nVert);
-    }
+    possible_edges = combinations_k2(nVert);
 
     std::shuffle(possible_edges.begin(), possible_edges.end(), std::default_random_engine(timeSeed));
     int count = 0;
@@ -137,7 +132,7 @@ int main(int argc, char** argv)
 
 
     for (int i =0; i< N; ++i) {
-        Graph<LinkedVertex, LinkedVertexList> g = getGraph(60, combinations_k2(60));
+        Graph<LinkedVertex, LinkedVertexList> g = getGraph(60);
         //std::cout << g;
 
         densities.emplace_back(g.getPlanarDensity());

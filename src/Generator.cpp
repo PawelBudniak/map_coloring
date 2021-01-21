@@ -38,9 +38,7 @@ void Generator::generateToFile(int nVert, int maxGraphs) {
     system(generatorCommand.c_str());
 }
 
-Graph<LinkedVertex, LinkedVertexList> Generator::getGraph(int nVert,
-                                                          std::optional<std::vector<std::pair<int,int>>> edge_combinations=std::nullopt,
-                                                          int batchSize = 0){
+Graph<LinkedVertex, LinkedVertexList> Generator::getGraph(int nVert, int batchSize = 0){
     using namespace boost;
     typedef adjacency_list<vecS, vecS, undirectedS> MyGraphType;
 
@@ -54,11 +52,7 @@ Graph<LinkedVertex, LinkedVertexList> Generator::getGraph(int nVert,
 
     MyGraphType g;
 
-    std::vector<std::pair<int, int>> possible_edges;
-    if (edge_combinations.has_value()) {
-        possible_edges = std::move(edge_combinations.value());
-    }
-    else {
+    if (possibleEdgesCache != nVert) {
         possible_edges = combinations_k2(nVert);
     }
 
