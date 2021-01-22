@@ -11,7 +11,7 @@ class CommandLineParser
 public:
     enum Mode {MANUAL, GENERATOR, TEST, INVALID};
     enum Algorithm {GREEDY, DSATUR, LINEAR5};
-    enum Param {A, N, K, R, STEP};
+    enum Param {A, N, K, R, STEP, P};
 
 public:
     CommandLineParser(int argc, char** argv);
@@ -43,6 +43,8 @@ private:
     int k{};
     int r{};
     int step{};
+
+    bool print = false;
 };
 
 #endif //MAP_COLORING_COMMANDLINEPARSER_H
