@@ -121,6 +121,10 @@ auto Linear5::color() -> std::tuple<int, std::vector<int>> {
     }
     int n_colors = std::set<int>(coloring.begin(), coloring.end()).size();
     assert(n_colors <= 5);
+
+    //  Shift color numbers to 1, 2, 3...
+    std::transform(coloring.begin(), coloring.end(), coloring.begin(), [](auto a){ return ++a; });
+
     return {n_colors, coloring};
 }
 
