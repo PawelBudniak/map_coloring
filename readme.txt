@@ -103,11 +103,14 @@ Projekt wykonany został za pomocą języka C++.
  Należy ustalić link do biblioteki boost w pliku CMakeLists.txt w folderze głównym w taki sposób:
 set(BOOST_ROOT <path_to_boost>)
 
-	
+Kompilacja programu odbywa się poprzez narzędzie CMake, należy wykonać następujące operacje:
+- Stworzyć folder build w dowolnym miejscu
+- Przejść do folderu build
+- Wykonać komendę cmake <path_to_CMakeLists.txt>
+- Wykonać komendę cmake --build
 
+W celu uruchomienia programu należy podać jego nazwę a następnie listę komend używanych przez program, np.:
+./map_coloring -m2 -n 10 -a linear5 -p
 
-
-
-
-
-
+Wygeneruje graf zawierający 10 wierzchołków, rozwiąże go za pomocą algorytmu linear5 oraz wypisze wygenerowany graf.
+W celu zapoznania się z dostępnymi parametrami należy uruchomić program bez żadnych komand: ./map_coloring
