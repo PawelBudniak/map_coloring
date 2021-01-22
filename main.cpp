@@ -46,8 +46,8 @@ struct TestResults
     }
 };
 
-void manualMode(Graph<LinkedVertex, LinkedVertexList>& graph, CommandLineParser::Algorithm algorithm);
-void generatorMode(Graph<LinkedVertex, LinkedVertexList>& graph, int nVert);
+void manualMode(Graph<LinkedVertex, LinkedVertexList>& graph, CommandLineParser::Algorithm algorithm, bool print);
+void generatorMode(Graph<LinkedVertex, LinkedVertexList>& graph, int nVert, CommandLineParser::Algorithm algorithm, bool print);
 void testMode(int start, int maxVertices, int step, int nGraphs);
 
 void printResults(const TestResults& results, int batchSize);
@@ -66,39 +66,119 @@ int main(int argc, char** argv)
     auto k = commandParser.getParam(CommandLineParser::K);
     auto r = commandParser.getParam(CommandLineParser::R);
     auto step = commandParser.getParam(CommandLineParser::STEP);
+    auto print = commandParser.getParam(CommandLineParser::P);
 
     switch (mode) {
-        case CommandLineParser::MANUAL:     manualMode(graph, algorithm);                      break;
-        case CommandLineParser::GENERATOR:  generatorMode(graph, CommandLineParser::N);   break;
-        case CommandLineParser::TEST:       testMode(n, n + step * k, step, r);         break;
+        case CommandLineParser::MANUAL:     manualMode(graph, algorithm, print);        break;
+        case CommandLineParser::GENERATOR:  generatorMode(graph, n, algorithm, print);  break;
+        case CommandLineParser::TEST:       testMode(n, n + step * k, step, r);       break;
         default:                            exit(1);
     }
 
     return 0;
 }
 
-void manualMode(Graph<LinkedVertex, LinkedVertexList>& graph, CommandLineParser::Algorithm algorithm)
+void manualMode(Graph<LinkedVertex, LinkedVertexList>& graph, CommandLineParser::Algorithm algorithm, bool print)
 {
+    std::cout << "Enter number of vertices:";
+
     int n;  //  Number of vertices
     std::cin >> n;
 
     graph.resize(n);
+
+    std::cout << "Enter number of edges:";
 
     int k;  //  Number of edges
     std::cin >> k;
 
     while (k-- > 0)
     {
+        std::cout << "Enter edge:";
+
         int a, b;   //  Vertices of edge
         std::cin >> a >> b;
 
         graph.addEdge(a, b);
     }
+
+    if (print)
+        std::cout << graph << "\n\n";
+
+    switch (algorithm) {
+        case CommandLineParser::GREEDY: {
+            auto[colorsUsed, colors] = greedyColoring(graph);
+
+            //  Print results
+            std::cout << colorsUsed << '\n';
+            for (int i = 0; i < colors.size(); ++i)
+                std::cout << i + 1 << ' ' << colors[i] << '\n';
+
+            break;
+        }
+        case CommandLineParser::DSATUR: {
+            auto[colorsUsed, colors] = dsaturColoring(graph);
+
+            //  Print results
+            std::cout << colorsUsed << '\n';
+            for (int i = 0; i < colors.size(); ++i)
+                std::cout << i + 1 << ' ' << colors[i] << '\n';
+
+            break;
+        }
+        case CommandLineParser::LINEAR5: {
+            auto[colorsUsed, colors] = colorLinear5(graph);
+
+            //  Print results
+            std::cout << colorsUsed << '\n';
+            for (int i = 0; i < colors.size(); ++i)
+                std::cout << i + 1 << ' ' << colors[i] << '\n';
+
+            break;
+        }
+    }
 }
 
-void generatorMode(Graph<LinkedVertex, LinkedVertexList>& graph, int nVert)
+void generatorMode(Graph<LinkedVertex, LinkedVertexList>& graph, int nVert, CommandLineParser::Algorithm algorithm, bool print)
 {
+    Generator g;
+    graph = g.getGraph(nVert, 0);
 
+    if (print)
+        std::cout << graph << "\n\n";
+
+    switch (algorithm) {
+        case CommandLineParser::GREEDY: {
+            auto[colorsUsed, colors] = greedyColoring(graph);
+
+            //  Print results
+            std::cout << colorsUsed << '\n';
+            for (int i = 0; i < colors.size(); ++i)
+                std::cout << i + 1 << ' ' << colors[i] << '\n';
+
+            break;
+        }
+        case CommandLineParser::DSATUR: {
+            auto[colorsUsed, colors] = dsaturColoring(graph);
+
+            //  Print results
+            std::cout << colorsUsed << '\n';
+            for (int i = 0; i < colors.size(); ++i)
+                std::cout << i + 1 << ' ' << colors[i] << '\n';
+
+            break;
+        }
+        case CommandLineParser::LINEAR5: {
+            auto[colorsUsed, colors] = colorLinear5(graph);
+
+            //  Print results
+            std::cout << colorsUsed << '\n';
+            for (int i = 0; i < colors.size(); ++i)
+                std::cout << i + 1 << ' ' << colors[i] << '\n';
+
+            break;
+        }
+    }
 }
 
 void testMode(int start, int maxVertices, int step, int nGraphs)

@@ -43,6 +43,8 @@ void CommandLineParser::parseCommands(int argc, char** argv)
             readParam(K, argv[i]);
         else if (cmd == "-step" && ++i < argc)
             readParam(STEP, argv[i]);
+        else if (cmd == "-p")
+            print = true;
         else
         {
             printHelp();
@@ -95,6 +97,7 @@ int CommandLineParser::getParam(Param param) const
         case K:     return k;
         case R:     return r;
         case STEP:  return step;
+        case P:     return print;
         default:    return -1;
     }
 }
@@ -123,4 +126,24 @@ void CommandLineParser::printHelp() const
 {
     std::cout << "\nProgram usage:\n";
     std::cout << "program_name [-m1|-m2|-m3] [params...]\n\n";
+
+    std::cout << "Mode flag must be present and has to be first flag in command line after program name.\n";
+    std::cout << "Supported modes:\n\n";
+    std::cout << "-m1\tMANUAL mode, take input from standard input in form: n k\n";
+    std::cout << "   \tk pairs of vertices defining unique edge (vertices start at 0)\n";
+    std::cout << "-m2\tGENERATOR mode, generate instance of problem and solve it\n";
+    std::cout << "-m3\tTEST mode, generate k instances of problem starting at n and increasing number of vertices by step\n";
+    std::cout << "   \teach instance of a problem has a batch of r graphs, results are an averge over single batch, time given in microseconds.\n";
+    std::cout << "   \tRequires n,k,r,step flags set (see below for explanation)\n";
+
+    std::cout << "\n\n";
+
+    std::cout << "Following flags can be given in an arbitrary order, parameters should be separated with whitespace.\n";
+    std::cout << "Supported flags:\n\n";
+    std::cout << "-n\tnumber of vertices used in generated problem\n";
+    std::cout << "-k\tnumber of iterations used in test mode\n";
+    std::cout << "-r\tnumber of graphs in single test batch for test mode\n";
+    std::cout << "-step\tnumber of vertices is increased by that value in each iteration of test mode\n";
+    std::cout << "-a\talgorithm used in MANUAL or GENERATOR mode, by default set to greedy. Possible values: greedy dsatur linear5\n";
+    std::cout << "-p\tprints graph to standard output, doesn't take parameter\n";
 }
