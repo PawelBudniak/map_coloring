@@ -5,7 +5,7 @@
  */
 
 #include <set>
-#include <fstream>
+#include <iomanip>
 
 #include "CommandLineParser.h"
 #include "coloring/Graph.h"
@@ -15,6 +15,12 @@
 
 struct TestResults
 {
+    enum Algorithm {GREEDY, GREEDY_RANDOM, DSATUR, LINEAR5};
+
+    int startVertices;
+    int maxVertices;
+    int stepVertices;
+
     std::vector<double> avgTimes1;
     std::vector<double> avgTimes2;
     std::vector<double> avgTimes3;
@@ -24,6 +30,9 @@ struct TestResults
     std::vector<double> avgColor2;
     std::vector<double> avgColor3;
     std::vector<double> avgColor4;
+
+    TestResults(int startVertices, int maxVertices, int stepVertices) :
+        startVertices(startVertices), maxVertices(maxVertices), stepVertices(stepVertices) { }
 
     void updateResults(double time1, double time2, double time3, double time4,
                        double color1, double color2, double color3, double color4, int nTests)
@@ -43,6 +52,9 @@ struct TestResults
 void manualMode(Graph<LinkedVertex, LinkedVertexList>& graph);
 void generatorMode(Graph<LinkedVertex, LinkedVertexList>& graph, int nVert);
 void testMode(int start, int maxVertices, int step, int nGraphs);
+
+void printResults(const TestResults& results, int batchSize);
+void printAlgorithmResults(const TestResults& results, TestResults::Algorithm algorithm);
 
 int main(int argc, char** argv)
 {
@@ -124,13 +136,7 @@ void manualMode(Graph<LinkedVertex, LinkedVertexList>& graph)
 
 void generatorMode(Graph<LinkedVertex, LinkedVertexList>& graph, int nVert)
 {
-    Generator::generateToFile(nVert, 1);
 
-    std::ifstream fp(Generator::OUTPUT_FILE);
-    std::string line;
-    std::getline(fp, line);
-
-    graph.fromAscii(line);
 }
 
 void testMode(int start, int maxVertices, int step, int nGraphs)
@@ -143,9 +149,9 @@ void testMode(int start, int maxVertices, int step, int nGraphs)
     auto algorithm2 = &dsaturColoring<LinkedVertex, LinkedVertexList>;
     auto algorithm3 = colorLinear5;
 
-    TestResults results;
+    TestResults results(start, maxVertices, step);
 
-    for (int nVert = start; nVert <= maxVertices; nVert += step)
+    for (int nVert = start; nVert < maxVertices; nVert += step)
     {
         double avgTime1 = 0, avgTime2 = 0, avgTime3 = 0, avgTime4 = 0,
                avgColor1 = 0, avgColor2 = 0, avgColor3 = 0, avgColor4 = 0;
@@ -156,31 +162,10 @@ void testMode(int start, int maxVertices, int step, int nGraphs)
         {
             Graph<LinkedVertex, LinkedVertexList> graph = g.getGraph(nVert, 0);
 
-            auto copy = graph;
-
-//            std::cout << graph << std::endl;
-
             auto [time1, colorsUsed1, colors1] = timer.time(algorithm1, graph, false);
             auto [time2, colorsUsed2, colors2] = timer.time(algorithm1, graph, true);
-
-            std::cout << graph << '\n';
-
             auto [time3, colorsUsed3, colors3] = timer.time(algorithm2, graph);
-
-            std::cout << graph << '\n';
-
             auto [time4, colorsUsed4, colors4] = timer.time(algorithm3, graph);
-
-            std::cout << colorsUsed1 << ' ' << colorsUsed2 << ' ' <<colorsUsed3 << ' ' <<colorsUsed4 << '\n';
-
-            if (!isCorrectColoring(graph, colors1))
-                std::cout << "Dupa1\n";
-            if (!isCorrectColoring(graph, colors2))
-                std::cout << "Dupa2\n";
-            if (!isCorrectColoring(graph, colors3))
-                std::cout << "Dupa3\n";
-            if (!isCorrectColoring(graph, colors4))
-                std::cout << "Dupa4\n";
 
             avgTime1 += time1;
             avgTime2 += time2;
@@ -196,45 +181,77 @@ void testMode(int start, int maxVertices, int step, int nGraphs)
         results.updateResults(avgTime1, avgTime2, avgTime3, avgTime4, avgColor1, avgColor2, avgColor3, avgColor4, nGraphs);
     }
 
-    for (auto avg : results.avgTimes1)
-        std::cout << avg << ' ';
-
-    std::cout << "\n";
-
-    for (auto avg : results.avgTimes2)
-        std::cout << avg << ' ';
-
-    std::cout << "\n";
-
-    for (auto avg : results.avgTimes3)
-        std::cout << avg << ' ';
-
-    std::cout << "\n";
-
-    for (auto avg : results.avgTimes4)
-        std::cout << avg << ' ';
-
-    std::cout << "\n\n";
-
-    for (auto avg : results.avgColor1)
-        std::cout << avg << ' ';
-
-    std::cout << "\n";
-
-    for (auto avg : results.avgColor2)
-        std::cout << avg << ' ';
-
-    std::cout << "\n";
-
-    for (auto avg : results.avgColor3)
-        std::cout << avg << ' ';
-
-    std::cout << "\n";
-
-    for (auto avg : results.avgColor4)
-        std::cout << avg << ' ';
-
-    remove(Generator::OUTPUT_FILE.c_str());
+    printResults(results, nGraphs);
 }
 
-// nie wiem gdzie dac ta funkcje xD w unittestach tak raczej nie pasuje
+void printResults(const TestResults& results, int batchSize)
+{
+    std::cout << "Each test group has been tested on batch of " << batchSize << " graphs.\n";
+
+    printAlgorithmResults(results, TestResults::GREEDY);
+    printAlgorithmResults(results, TestResults::GREEDY_RANDOM);
+    printAlgorithmResults(results, TestResults::DSATUR);
+    printAlgorithmResults(results, TestResults::LINEAR5);
+}
+
+void printAlgorithmResults(const TestResults& results, TestResults::Algorithm algorithm)
+{
+    using namespace std;
+
+    const std::vector<double>* times;
+    const std::vector<double>* colors;
+
+    std::cout << std::endl;
+
+    switch (algorithm)
+    {
+        case TestResults::GREEDY:
+            times = &results.avgTimes1;
+            colors = &results.avgColor1;
+
+            std::cout << "Results of greedy algorithm\n\n";
+            break;
+
+        case TestResults::GREEDY_RANDOM:
+            times = &results.avgTimes2;
+            colors = &results.avgColor2;
+
+            std::cout << "Results of greedy algorithm with random order of traversal\n\n";
+            break;
+
+        case TestResults::DSATUR:
+            times = &results.avgTimes3;
+            colors = &results.avgColor3;
+
+            std::cout << "Results of dsatur algorithm\n\n";
+            break;
+
+        case TestResults::LINEAR5:
+            times = &results.avgTimes4;
+            colors = &results.avgColor4;
+
+            std::cout << "Results of linear5 algorithm\n\n";
+            break;
+    }
+
+    auto mid = (*times).size() / 2;
+    auto tMedian = (*times).size() % 2 == 0 ? ((*times)[mid] + (*times)[mid + 1]) / 2 : (*times)[mid];
+    auto TMedian = (results.startVertices + results.maxVertices) / 2;
+
+    std::cout << "------------------------------------------------\n";
+    std::cout << "|  n  |   T(n)   |   t(n)   |   q(n)   |   c   |\n";
+    std::cout << "------------------------------------------------\n";
+
+    for (int i = 1; i <= results.avgTimes1.size(); ++i)
+    {
+        auto Tn = i * results.stepVertices;
+        auto tn = (*times)[i - 1];
+
+        std::cout << "| " << setw(3) <<  i * results.stepVertices;
+        std::cout << " | " << setw(8) << Tn;
+        std::cout << " | " << setw(8) << tn;
+        std::cout << " | " << setw(8) << setprecision(5) << (tn * TMedian) / (Tn * tMedian);
+        std::cout << " | " << setw(5) << (*colors)[i - 1];
+        std::cout << " |\n";
+    }
+}

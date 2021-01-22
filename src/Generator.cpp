@@ -42,11 +42,11 @@ Graph<LinkedVertex, LinkedVertexList> Generator::getGraph(int nVert, int batchSi
     using namespace boost;
     typedef adjacency_list<vecS, vecS, undirectedS> MyGraphType;
 
-    static std::mt19937_64 rng;
+    static std::mt19937_64 rng(std::time(nullptr));
     // initialize the random number generator with time-dependent seed
-    static uint64_t timeSeed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
-    static std::seed_seq ss{uint32_t(timeSeed & 0xffffffff), uint32_t(timeSeed>>32)};
-    rng.seed(ss);
+//    static uint64_t timeSeed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+//    static std::seed_seq ss{uint32_t(timeSeed & 0xffffffff), uint32_t(timeSeed>>32)};
+//    rng.seed(ss);
     // initialize a uniform distribution between 0 and 1
     static std::uniform_real_distribution<double> unif(0, 1);
 
@@ -56,7 +56,7 @@ Graph<LinkedVertex, LinkedVertexList> Generator::getGraph(int nVert, int batchSi
         possible_edges = combinations_k2(nVert);
     }
 
-    std::shuffle(possible_edges.begin(), possible_edges.end(), std::default_random_engine(timeSeed));
+    std::shuffle(possible_edges.begin(), possible_edges.end(), std::default_random_engine(std::time(nullptr)));
     int count = 0;
 
     if (!batchSize) {
