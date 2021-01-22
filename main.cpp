@@ -4,8 +4,8 @@
  *  Github: https://github.com/michal-swiatek
  */
 
-#include <set>
 #include <iomanip>
+#include <fstream>
 
 #include "CommandLineParser.h"
 #include "coloring/Graph.h"
@@ -49,7 +49,7 @@ struct TestResults
     }
 };
 
-void manualMode(Graph<LinkedVertex, LinkedVertexList>& graph);
+void manualMode(Graph<LinkedVertex, LinkedVertexList>& graph, CommandLineParser::Algorithm algorithm);
 void generatorMode(Graph<LinkedVertex, LinkedVertexList>& graph, int nVert);
 void testMode(int start, int maxVertices, int step, int nGraphs);
 
@@ -59,7 +59,6 @@ void printAlgorithmResults(const TestResults& results, TestResults::Algorithm al
 int main(int argc, char** argv)
 {
     CommandLineParser commandParser(argc, argv);
-//    commandParser.printParams();
 
     auto mode = commandParser.getMode();
     auto algorithm = commandParser.getAlgorithm();
@@ -72,50 +71,16 @@ int main(int argc, char** argv)
     auto step = commandParser.getParam(CommandLineParser::STEP);
 
     switch (mode) {
-        case CommandLineParser::MANUAL:     manualMode(graph);                                 break;
+        case CommandLineParser::MANUAL:     manualMode(graph, algorithm);                      break;
         case CommandLineParser::GENERATOR:  generatorMode(graph, CommandLineParser::N);   break;
         case CommandLineParser::TEST:       testMode(n, n + step * k, step, r);         break;
         default:                            exit(1);
     }
 
-//    std::cout << graph << "\n\n\n";
-
-    int maxColor;
-    std::vector<int> colors;
-
-    switch (algorithm) {
-        case CommandLineParser::GREEDY:
-        {
-            auto [a, b] = greedyColoring(graph);
-            maxColor = a;
-            colors = std::move(b);
-            break;
-        }
-        case CommandLineParser::DSATUR:
-        {
-            auto[a, b] = dsaturColoring(graph);
-            maxColor = a;
-            colors = std::move(b);
-            break;
-        }
-        case CommandLineParser::LINEAR5:
-        {
-            auto [a, b] = colorLinear5(graph);
-            maxColor = a;
-            colors = std::move(b);
-            break;
-        }
-    }
-
-//    std::cout << maxColor << '\n';
-//    for (const auto& color : colors)
-//        std::cout << color << ' ';
-
     return 0;
 }
 
-
-void manualMode(Graph<LinkedVertex, LinkedVertexList>& graph)
+void manualMode(Graph<LinkedVertex, LinkedVertexList>& graph, CommandLineParser::Algorithm algorithm)
 {
     int n;  //  Number of vertices
     std::cin >> n;
@@ -189,7 +154,7 @@ void printResults(const TestResults& results, int batchSize)
     std::cout << "\nEach test group has been tested on batch of " << batchSize << " graphs.\n\n";
     std::cout << "n - number of vertices for each graphs in batch\n";
     std::cout << "T(n) - theoretical speed of algorithm (linear for all tested algorithms)\n";
-    std::cout << "t(n) - measured speed of algorithm (average over all test in batch, given in microseconds)\n";
+    std::cout << "t(n) - measured speed of algorithm (average over all tests in batch, given in microseconds)\n";
     std::cout << "q(n) - estimation coefficient\n";
     std::cout << "c - average number of colors used to color graph\n";
 
@@ -206,6 +171,8 @@ void printAlgorithmResults(const TestResults& results, TestResults::Algorithm al
     const std::vector<double>* times;
     const std::vector<double>* colors;
 
+    std::ofstream file;
+
     std::cout << std::endl;
 
     switch (algorithm)
@@ -214,12 +181,16 @@ void printAlgorithmResults(const TestResults& results, TestResults::Algorithm al
             times = &results.avgTimes1;
             colors = &results.avgColor1;
 
+            file.open("greedy_results.csv");
+
             std::cout << "Results of greedy algorithm\n\n";
             break;
 
         case TestResults::GREEDY_RANDOM:
             times = &results.avgTimes2;
             colors = &results.avgColor2;
+
+            file.open("greedy_shuffle_results.csv");
 
             std::cout << "Results of greedy algorithm with random order of traversal\n\n";
             break;
@@ -228,12 +199,16 @@ void printAlgorithmResults(const TestResults& results, TestResults::Algorithm al
             times = &results.avgTimes3;
             colors = &results.avgColor3;
 
+            file.open("dsatur_results.csv");
+
             std::cout << "Results of dsatur algorithm\n\n";
             break;
 
         case TestResults::LINEAR5:
             times = &results.avgTimes4;
             colors = &results.avgColor4;
+
+            file.open("linear5_results.csv");
 
             std::cout << "Results of linear5 algorithm\n\n";
             break;
@@ -242,6 +217,9 @@ void printAlgorithmResults(const TestResults& results, TestResults::Algorithm al
     auto mid = (*times).size() / 2;
     auto tMedian = (*times).size() % 2 == 0 ? ((*times)[mid] + (*times)[mid + 1]) / 2 : (*times)[mid];
     auto TMedian = (results.startVertices + results.maxVertices) / 2;
+
+    //  Write headers to output file
+    file << "n,T(n),t(n),q(n),colors\n";
 
     std::cout << "------------------------------------------------\n";
     std::cout << "|  n  |   T(n)   |   t(n)   |   q(n)   |   c   |\n";
@@ -252,11 +230,19 @@ void printAlgorithmResults(const TestResults& results, TestResults::Algorithm al
         auto Tn = i * results.stepVertices;
         auto tn = (*times)[i - 1];
 
+        //  Print results on console
         std::cout << "| " << setw(3) <<  i * results.stepVertices;
         std::cout << " | " << setw(8) << Tn;
         std::cout << " | " << setw(8) << tn;
         std::cout << " | " << setw(8) << setprecision(5) << (tn * TMedian) / (Tn * tMedian);
         std::cout << " | " << setw(5) << (*colors)[i - 1];
         std::cout << " |\n";
+
+        //  Save to csv file
+        file << i * results.stepVertices << ',';
+        file << Tn << ',';
+        file << tn << ',';
+        file << setprecision(5) << (tn * TMedian) / (Tn * tMedian) << ',';
+        file << (*colors)[i - 1] << '\n';
     }
 }
