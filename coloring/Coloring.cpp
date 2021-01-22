@@ -1,3 +1,6 @@
+// Analysis of map coloring algorithms
+// Authors: Pawel Budniak, Michal Swiatek
+
 #include <cassert>
 #include <set>
 
@@ -14,8 +17,6 @@ Linear5::Linear5(Graph<LinkedVertex, LinkedVertexList> &g):
         graph(g),
         vertices(g.getVertices())
 {
-
-    //auto & vertices = graph.getVertices();
 
     // setup helper variables and containers
 
@@ -40,7 +41,6 @@ Linear5::Linear5(Graph<LinkedVertex, LinkedVertexList> &g):
 void Linear5::reduce() {
     while (n_vertices > 5){
         if (!qDegLte4.empty()) {
-            // "delete top entry from Q4" -- idk if back or front
             removeVertex(qDegLte4.front());
         }
         else{
@@ -55,11 +55,10 @@ void Linear5::reduce() {
                 if (degrees[temp] < K_THRESHHOLD)
                     candidates.push_back(temp);
             }
-            // now check if we can find 2 non adjacent candidates, this takes at most O(5*5*K) => it's done in constant time
+            // now check if we can find 2 non adjacent candidates, this takes at most O( (5 choose 2) *K) => it's done in constant time
             // candidates size <= vertices[v] size == 5; since it's in qDeg5
-            // TODO: mozna przechodzic po (5 choose 2) kombinacjach a nie po 5*5 wszystkich z powtorzeniami jak teraz
             for (int i=0; i < candidates.size(); ++i){
-                for (int j=i; i < candidates.size(); ++j){
+                for (int j=i+1; i < candidates.size(); ++j){
                     bool areAdj = false;
                     for (const LinkedVertex& k: vertices[j]){
                         if (k.index == i){
@@ -120,7 +119,6 @@ auto Linear5::color() -> std::tuple<int, std::vector<int>> {
         }
 
     }
-    // TODO: xD
     int n_colors = std::set<int>(coloring.begin(), coloring.end()).size();
     assert(n_colors <= 5);
     return {n_colors, coloring};
@@ -138,6 +136,7 @@ void Linear5::check(int vertex) {
 }
 
 void Linear5::removeVertex(int vertex) {
+    // remove the vertex from all other adjacency lists
     for (const LinkedVertex& v: vertices[vertex]){
         graph.removeNeighbour(v);
         degrees[v] -= 1;

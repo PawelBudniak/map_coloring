@@ -1,3 +1,6 @@
+// Analysis of map coloring algorithms
+// Authors: Pawel Budniak, Michal Swiatek
+
 #ifndef KORKI_TIMER_H
 #define KORKI_TIMER_H
 

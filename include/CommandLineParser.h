@@ -1,8 +1,5 @@
-/*  
- *  Created by michal-swiatek on 15.01.2021.
- *
- *  Github: https://github.com/michal-swiatek
- */
+// Analysis of map coloring algorithms
+// Authors: Pawel Budniak, Michal Swiatek
 
 #ifndef MAP_COLORING_COMMANDLINEPARSER_H
 #define MAP_COLORING_COMMANDLINEPARSER_H

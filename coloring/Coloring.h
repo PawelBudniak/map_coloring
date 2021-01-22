@@ -1,8 +1,5 @@
-/*  
- *  Created by michal-swiatek on 14.01.2021.
- *
- *  Github: https://github.com/michal-swiatek
- */
+// Analysis of map coloring algorithms
+// Authors: Pawel Budniak, Michal Swiatek
 
 #ifndef MAP_COLORING_COLORING_H
 #define MAP_COLORING_COLORING_H
@@ -165,8 +162,19 @@ auto dsaturColoring(const Graph<Vertex, NeighbourList>& graph) -> std::tuple<int
 
 // Implementation of an algorithm published by Howard Williams in The Computer Journal in 1985
 // Colors a planar graph with max 5 colors in linear time
+//
+// WARNING: Modifies the graph given
+//
+// The graph given must have doubly linked vertices stored in a doubly linked list:
+// e.g. a Vertex  u in vertices[v] must hold a pointer/iterator to vertex v in vertices[u]
+// This, coupled with storing the vertices in a doubly linked list guarantees fast removal
+// of a vertex from other adjacency lists
+//
 // Returns:
-// a tuple {int: n of colors used, vector<int>: vector mapping vertex:color}
+// a tuple of
+// {int: n of colors used,
+// vector<int>: vector mapping vertex:color
+// }
 auto colorLinear5(Graph<LinkedVertex,LinkedVertexList> &graph) -> std::tuple<int, std::vector<int>>;
 
 
@@ -182,6 +190,8 @@ private:
     Graph<LinkedVertex,LinkedVertexList> & graph;
     const Graph<LinkedVertex,LinkedVertexList>::VertexList & vertices;
 
+    // type used for qDeg5 and qDegLte4
+    // needs to guarantee O(1) removal of an element from the middle given an iterator pointing to it
     using Qtype = std::list<int>;
     // holds vertices of degree 5
     Qtype qDeg5;
@@ -217,12 +227,14 @@ public:
     explicit Linear5(Graph<LinkedVertex,LinkedVertexList> & g);
 
 
+    // reduces the graph until there are 5 vertices left
     void reduce();
     auto color() -> std::tuple<int, std::vector<int>>;
 
 
 private:
     void check(int vertex);
+    // identification - removes u from the graph and adds all of it's neighbours to v's adjacency list (if they're not already there)
     void identify(int u, int v);
     void removeVertex(int vertex);
     void removeFromQ(Qtype & q, int vertex);

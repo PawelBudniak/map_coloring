@@ -1,3 +1,6 @@
+// Analysis of map coloring algorithms
+// Authors: Pawel Budniak, Michal Swiatek
+
 #include "catch.hpp"
 #include "../coloring/Graph.h"
 #include "../coloring/Coloring.h"

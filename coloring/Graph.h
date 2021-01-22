@@ -1,3 +1,6 @@
+// Analysis of map coloring algorithms
+// Authors: Pawel Budniak, Michal Swiatek
+
 #ifndef MAP_COLORING_GRAPH_H
 #define MAP_COLORING_GRAPH_H
 
@@ -12,6 +15,7 @@
 
 struct LinkedVertex;
 
+// needs to guarantee O(1) removal of an element from the middle given an iterator pointing to it
 using LinkedVertexList = std::list<LinkedVertex>;
 
 struct LinkedVertex{
@@ -35,7 +39,7 @@ public:
     Graph () = default;
 
     void fromAscii(const std::string & ascii);
-    int fromBinary(const std::vector<char>& data, int start);
+    int fromPlanarCode(const std::vector<char>& data, int start);
 
     NeighbourList& operator[] (int idx)             { return vertices[idx]; }
     const NeighbourList& operator[] (int idx) const { return vertices[idx]; }
@@ -79,12 +83,7 @@ inline void Graph<V, NeighbourList>::addEdge(int v1, int v2)
     ++nEdges;
 }
 
-//template<typename NeighbourList>
-//inline void Graph<NeighbourList>::removeNeighbour(int from, int neighbour) {
-//    NeighbourList & neighbours = vertices[from];
-//    neighbours.erase(std::remove(neighbours.begin(), neighbours.end(), neighbour), neighbours.end());
-//}
-//
+
 template<typename V, typename NeighbourList>
 inline auto Graph<V,NeighbourList>::getVertices() const -> const typename Graph<V,NeighbourList>::VertexList &
 {
@@ -103,7 +102,7 @@ inline void Graph<LinkedVertex, LinkedVertexList>::addEdge(int v1, int v2)
 }
 
 // a vertex v is removed, such that v is at the other end of an edge with vertex *from* passed to this function
-// e.g.: this method is called on vertex 3 in vertices[1] => vertex 1 in vertices[3] will be removed
+// e.g.: if this method is called on vertex 3 in vertices[1] => vertex 1 in vertices[3] will be removed
 template<>
 inline void Graph<LinkedVertex, LinkedVertexList>::removeNeighbour(LinkedVertex from)
 {
@@ -142,7 +141,7 @@ void Graph<V, NeighbourList>::fromAscii(const std::string &ascii) {
 }
 
 template<typename V, typename NeighbourList>
-int Graph<V, NeighbourList>::fromBinary(const std::vector<char>& data, int start) {
+int Graph<V, NeighbourList>::fromPlanarCode(const std::vector<char>& data, int start) {
     vertices.clear();
 
     const char FIRST = 1;
