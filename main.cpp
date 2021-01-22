@@ -186,7 +186,12 @@ void testMode(int start, int maxVertices, int step, int nGraphs)
 
 void printResults(const TestResults& results, int batchSize)
 {
-    std::cout << "Each test group has been tested on batch of " << batchSize << " graphs.\n";
+    std::cout << "\nEach test group has been tested on batch of " << batchSize << " graphs.\n\n";
+    std::cout << "n - number of vertices for each graphs in batch\n";
+    std::cout << "T(n) - theoretical speed of algorithm (linear for all tested algorithms)\n";
+    std::cout << "t(n) - measured speed of algorithm (average over all test in batch, given in microseconds)\n";
+    std::cout << "q(n) - estimation coefficient\n";
+    std::cout << "c - average number of colors used to color graph\n";
 
     printAlgorithmResults(results, TestResults::GREEDY);
     printAlgorithmResults(results, TestResults::GREEDY_RANDOM);
